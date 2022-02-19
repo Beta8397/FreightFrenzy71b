@@ -67,8 +67,8 @@ public class PinHole {
         float sin = (float)Math.sin(elevationAngleRadians);
         float cos = (float)Math.cos(elevationAngleRadians);
 
-        float xPrime = resX/2.0f - imageX;
-        float yPrime = imageY - resY/2.0f;
+        float xPrime = imageX - resX / 2.0f;
+        float yPrime = imageY - resY / 2.0f;
 
         if (xReversed) xPrime *= -1.0f;
         if (yReversed) yPrime *= -1.0f;
