@@ -1,18 +1,18 @@
-package org.firstinspires.ftc.teamcode.freightbot.autonomous;
+package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 
 @Disabled
-@Autonomous(name = "RedLeftAutoWarehouse", group = "redAuto")
-public class RedLeftAutoWarehouse extends FreightBotAutonomous {
+@Autonomous(name = "RedRightAutoCarousel", group = "redAuto")
+public class RedRightAutoCarousel extends FreightBotAutonomous_Old {
 
-    FreightBot bot = new FreightBot();
+    FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
 
     @Override
@@ -21,37 +21,37 @@ public class RedLeftAutoWarehouse extends FreightBotAutonomous {
         super.setBot(bot);
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         VuforiaNavigator.activate(null, webcam);
-        bot.setPose(8, 114, 180);
-        bot.closeArmCapServo();
+        bot.setPose(8, 66, 180);
         telemetry.addData("press start when ready", "");
         telemetry.update();
         waitForStart();
         MarkerPos markerPos = getMarkerPos(CameraStartPos.RIGHT);
-
+        telemetry.addData("marker pos", markerPos);
+        telemetry.update();
+        // TODO everything else
+        telemetry.addData("first drive done", "");
+        telemetry.update();
         int armAngleTicks;
         float x1;
         float y1;
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = 610;
-            x1 = 18; //was 19
-            y1 = 108.95f; //was 106.75
+            x1 = 19;
+            y1 = 61.25f;
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 400;
-            x1 = 17.5f; //was 19
-            y1 = 108f; //was 105
+            armAngleTicks = 390;
+            x1 = 19;
+            y1 = 63;
         } else {
             armAngleTicks = 200;
-            x1 = 21; //was 21
-            y1 = 104.8f; //was 103
+            x1 = 21;
+            y1 = 65;
         }
 
-        bot.setArmExtensionTicks(450);
-
-//        extendAndAngleArm(armAngleTicks, 150, markerPos);
+        extendAndAngleArm(armAngleTicks, 150, markerPos);
 
         driveToPosition(SLOW, x1, y1, 180, 1);
-        rotateTapeAndAngleArm(armAngleTicks, markerPos);
-        turnToHeading(135, 3, 8, 60);
+        turnToHeading(-135, 3, 8, 60);
 
 //        bot.setArmExtensionTicks(950);
 //        sleep(250);

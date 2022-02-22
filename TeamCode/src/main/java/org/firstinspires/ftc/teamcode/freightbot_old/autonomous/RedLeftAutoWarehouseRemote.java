@@ -1,21 +1,19 @@
-package org.firstinspires.ftc.teamcode.freightbot.autonomous;
+package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotTeleOp;
-import org.firstinspires.ftc.teamcode.util.CubicSpline2D;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotTeleOp_Old;
 
 @Disabled
 @Autonomous(name = "RedLeftAutoWarehouseRemote", group = "redAuto")
-public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous {
+public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous_Old {
 
-    FreightBot bot = new FreightBot();
+    FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
 
     @Override
@@ -84,9 +82,9 @@ public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous {
         }
 
         bot.setArmExtensionTicks(150);
-        bot.setIntakeExtensionTicks(FreightBot.INTAKE_EXTENSION_MIN_TICKS);
-        bot.setIntakeFlipper(FreightBot.INTAKE_FLIPPER_OUT);
-        bot.setIntakeWheelState(FreightBot.IntakeWheelState.FORWARD);
+        bot.setIntakeExtensionTicks(FreightBot_Old.INTAKE_EXTENSION_MIN_TICKS);
+        bot.setIntakeFlipper(FreightBot_Old.INTAKE_FLIPPER_OUT);
+        bot.setIntakeWheelState(FreightBot_Old.IntakeWheelState.FORWARD);
         bot.armCapServo.setPosition(.25f);
 
         if (markerPos != MarkerPos.RIGHT)
@@ -119,9 +117,9 @@ public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous {
             sleep(200);
         }
 
-        bot.setIntakeWheelState(FreightBot.IntakeWheelState.STOPPED);
-        bot.setIntakeState(FreightBot.IntakeState.IN_MID);
-        bot.setIntakeExtensionTicks(FreightBotTeleOp.MIN_ARM_EXTENSION_TICKS);
+        bot.setIntakeWheelState(FreightBot_Old.IntakeWheelState.STOPPED);
+        bot.setIntakeState(FreightBot_Old.IntakeState.IN_MID);
+        bot.setIntakeExtensionTicks(FreightBotTeleOp_Old.MIN_ARM_EXTENSION_TICKS);
         sleep(250);
         bot.setArmExtensionTicks(0);
         sleep(250);
@@ -135,7 +133,7 @@ public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous {
             driveToPosition(SLOW, 24.5f, 66f, (float)Math.toDegrees(bot.getPose().theta), 1);
         }
 
-        bot.setIntakeState(FreightBot.IntakeState.CENTER_MID);
+        bot.setIntakeState(FreightBot_Old.IntakeState.CENTER_MID);
         bot.closeArmCapServo();
 
         if (markerPos == MarkerPos.LEFT) {
@@ -148,7 +146,7 @@ public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous {
         while (opModeIsActive() && bot.getActualArmExtensionTicks() < 215) {
             continue;
         }
-        bot.setArmServoPosition(FreightBot.DUMPER_EXTENDED);
+        bot.setArmServoPosition(FreightBot_Old.DUMPER_EXTENDED);
 
         float duckDeliveryHeadingDegrees = markerPos != MarkerPos.RIGHT  ? -125 : -133;
 

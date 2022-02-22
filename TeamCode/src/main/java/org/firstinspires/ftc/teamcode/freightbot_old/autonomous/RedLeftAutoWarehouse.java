@@ -1,18 +1,18 @@
-package org.firstinspires.ftc.teamcode.freightbot.autonomous;
+package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 
 @Disabled
-@Autonomous(name = "RedLeftAutoStorage", group = "redAuto")
-public class RedLeftAutoStorage extends FreightBotAutonomous {
+@Autonomous(name = "RedLeftAutoWarehouse", group = "redAuto")
+public class RedLeftAutoWarehouse extends FreightBotAutonomous_Old {
 
-    FreightBot bot = new FreightBot();
+    FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
 
     @Override
@@ -33,21 +33,21 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
         float y1;
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = 610;
-            x1 = 18.25f; //was 17.25
-            y1 = 108.25f; //was 109.25
+            x1 = 18; //was 19
+            y1 = 108.95f; //was 106.75
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 420;
-            x1 = 20f; //was 19
-            y1 = 109.5f; //was 108.5
+            armAngleTicks = 400;
+            x1 = 17.5f; //was 19
+            y1 = 108f; //was 105
         } else {
             armAngleTicks = 200;
-            x1 = 22; //was 21
-            y1 = 105.8f; //was 103
+            x1 = 21; //was 21
+            y1 = 104.8f; //was 103
         }
 
-        bot.setArmExtensionTicks(600);
+        bot.setArmExtensionTicks(450);
 
-        //extendAndAngleArm(armAngleTicks, 450, markerPos);
+//        extendAndAngleArm(armAngleTicks, 150, markerPos);
 
         driveToPosition(SLOW, x1, y1, 180, 1);
         rotateTapeAndAngleArm(armAngleTicks, markerPos);
@@ -58,13 +58,12 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
 //        bot.setArmServoPosition(FreightBot.DUMPER_EXTENDED);
 //        sleep(1750);
 //        bot.setArmExtensionTicks(0);
-//        sleep(300);
+//        sleep(100);
 //        bot.setArmServoPosition(FreightBot.DUMPER_RETRACTED);
+//        sleep(400);
 //        bot.setArmAngleTicks(0);
 
         deliverShippingHub();
-        driveToPosition(SLOW, bot.getPose().x-2, bot.getPose().y+2,
-                (float)Math.toDegrees(bot.getHeadingRadians()), 1);
 
         turnToHeading(-90, 3, 8, 60);
         driveToPosition(SLOW, 20, 136, -90, 1);
@@ -72,7 +71,7 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
         carouselDrive(Alliance.RED);
         bot.setSpeedSpinnerMotor(0);
 
-        driveToParkStorage(Alliance.RED);
+        driveToParkFromCarousel(Alliance.RED);
 
     }
 }

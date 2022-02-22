@@ -1,18 +1,18 @@
-package org.firstinspires.ftc.teamcode.freightbot.autonomous;
+package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 
 @Disabled
 @Autonomous(name = "BlueRightAutoStorage", group = "blueAuto")
-public class BlueRightAutoStorage extends FreightBotAutonomous {
+public class BlueRightAutoStorage extends FreightBotAutonomous_Old {
 
-    FreightBot bot = new FreightBot();
+    FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
 
     @Override

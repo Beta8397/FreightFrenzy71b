@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.freightbot;
+package org.firstinspires.ftc.teamcode.freightbot_old;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -6,7 +6,6 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.cv.Blob;
 import org.firstinspires.ftc.teamcode.cv.BlobHelper;
 import org.firstinspires.ftc.teamcode.cv.HSV_Range;
-import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
 import org.firstinspires.ftc.teamcode.mecbot.MecBotAutonomous;
 import org.firstinspires.ftc.teamcode.util.AngleUtils;
 import org.firstinspires.ftc.teamcode.util.CubicSpline2D;
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.MotionProfile;
 
 import java.util.List;
 
-public abstract class FreightBotAutonomous extends MecBotAutonomous {
+public abstract class FreightBotAutonomous_Old extends MecBotAutonomous {
 
     public static final MotionProfile SUPER_SLOW = new MotionProfile(15, 20, 20);
 
@@ -22,7 +21,7 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
 
     public static final MotionProfile FAST = new MotionProfile(15, 45, 40);
 
-    private FreightBot bot = null;
+    private FreightBot_Old bot = null;
 
     public enum CameraStartPos {LEFT,RIGHT}
     public enum MarkerPos {LEFT,CENTER,RIGHT}
@@ -31,9 +30,9 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
     public final static HSV_Range HSV_RANGE = new HSV_Range(60, 100, 0.5f, 1,
             0.25f, 1);
 
-    public void setBot(FreightBot freightBot) {
-        bot = freightBot;
-        super.setBot(freightBot);
+    public void setBot(FreightBot_Old freightBotOld) {
+        bot = freightBotOld;
+        super.setBot(freightBotOld);
     }
 
     public MarkerPos getMarkerPos(CameraStartPos cameraStartPos) {
@@ -141,6 +140,22 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
         bot.setDriveSpeed(0,0,0);
     }
 
+    public void driveToParkFromCarousel(Alliance alliance) {
+        if (alliance == Alliance.RED) {
+            bot.setPose(17, 135, (float)Math.toDegrees(bot.getHeadingRadians()));
+            CubicSpline2D spline = new CubicSpline2D(new float[] {17,135,25,90,39,12}, -90, -90);
+            driveSpline(SLOW, 0.6f, -90, 6, 6, spline);
+        } else {
+            bot.setPose(-17, 135);
+            driveToPosition(SLOW, -21, 129, (float)Math.toDegrees(bot.getPose().theta), 1);
+            turnToHeading(-90, 3, 8, 60);
+            CubicSpline2D spline = new CubicSpline2D(new float[] {bot.getPose().x,bot.getPose().y,-34,8}, -90, -90);
+           // driveSpline(SLOW, .1f, 0.5f, -90, 6, 6, spline);
+            driveSpline(SLOW, false, 1, spline);
+
+        }
+    }
+
     MotionProfile slowPark = new MotionProfile(15, 20, 5);
 
     public void driveToParkStorage (Alliance alliance) {
@@ -160,5 +175,44 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
         }
     }
 
+    public void cycleShippingHub() {
 
+    }
+
+    public void deliverShippingHub() {
+            bot.setArmExtensionTicks(950, 0.6f);
+            sleep(350);
+            bot.openArmCapServo();
+            sleep(500);
+            bot.setArmExtensionTicks(450, 0.6f);
+            sleep(300);
+            bot.setArmServoPosition(FreightBot_Old.DUMPER_RETRACTED);
+            sleep(500);
+            bot.setArmAngleTicks(0);
+            sleep(600);
+            bot.setArmExtensionTicks(0, 0.6f);
+            bot.setIntakeState(FreightBot_Old.IntakeState.CENTER_MIN);
+            bot.setIntakeWheelState(FreightBot_Old.IntakeWheelState.STOPPED);
+    }
+
+    public void extendAndAngleArm(int angleTicks, int extensionTicks, MarkerPos pos) {
+        bot.setArmExtensionTicks(extensionTicks, 0.7f);
+        sleep(100);
+        bot.setArmAngleTicks(angleTicks, 0.7f);
+        while (opModeIsActive() && bot.getActualArmExtensionTicks() < (extensionTicks - 50)) {
+            continue;
+        }
+        bot.setArmServoPosition(pos == MarkerPos.LEFT? FreightBot_Old.DUMPER_MID: FreightBot_Old.DUMPER_EXTENDED);
+    }
+
+    public void rotateTapeAndAngleArm (int angleTicks, MarkerPos pos) {
+        bot.setTapeRotationPower(1f);
+        sleep(1000);
+        bot.setTapeRotationPower(0);
+        bot.setArmAngleTicks(angleTicks, 0.7f);
+        while (opModeIsActive() && bot.getActualArmExtensionTicks() < 550) {
+            continue;
+        }
+        bot.setArmServoPosition(pos == MarkerPos.LEFT? FreightBot_Old.DUMPER_MID: FreightBot_Old.DUMPER_EXTENDED);
+    }
 }

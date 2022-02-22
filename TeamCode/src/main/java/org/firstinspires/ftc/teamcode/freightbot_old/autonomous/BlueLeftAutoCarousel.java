@@ -1,18 +1,18 @@
-package org.firstinspires.ftc.teamcode.freightbot.autonomous;
+package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 
 @Disabled
-@Autonomous(name = "BlueRightAutoCarousel", group = "blueAuto")
-public class BlueRightAutoCarousel extends FreightBotAutonomous {
+@Autonomous(name = "BlueLeftAutoCarousel", group = "blueAuto")
+public class BlueLeftAutoCarousel extends FreightBotAutonomous_Old {
 
-    FreightBot bot = new FreightBot();
+    FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
 
     @Override
@@ -21,7 +21,7 @@ public class BlueRightAutoCarousel extends FreightBotAutonomous {
         super.setBot(bot);
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         VuforiaNavigator.activate(null, webcam);
-        bot.setPose(-8, 104, 0);
+        bot.setPose(-8, 59, 0);
         telemetry.addData("press start when ready", "");
         telemetry.update();
         waitForStart();
@@ -37,32 +37,21 @@ public class BlueRightAutoCarousel extends FreightBotAutonomous {
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = 610;
             x1 = -19;
-            y1 = 106.3f;
+            y1 = 61.25f;
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = 400;
-            x1 = -18; //was -19
-            y1 = 105.8f; //was 104.8f
+            x1 = -19;
+            y1 = 63;
         } else {
             armAngleTicks = 200;
-            x1 = -23;
-            y1 = 105f;
+            x1 = -21;
+            y1 = 65;
         }
 
         extendAndAngleArm(armAngleTicks, 150, markerPos);
 
         driveToPosition(SLOW, x1, y1, 0, 1);
-        turnToHeading(45, 3, 8, 60);
-
-//        bot.setArmExtensionTicks(950, 0.8f);
-//        sleep(250);
-//        bot.setArmServoPosition(FreightBot.DUMPER_EXTENDED);
-//        sleep(1750);
-//        bot.setArmExtensionTicks(100, 0.75f);
-//        sleep(300);
-//        bot.setArmServoPosition(FreightBot.DUMPER_RETRACTED);
-//        bot.setArmAngleTicks(0);
-//        sleep(600);
-//        bot.setArmExtensionTicks(0, .9f);
+        turnToHeading(-45, 3, 8, 60);
 
         deliverShippingHub();
 

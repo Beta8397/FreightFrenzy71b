@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.freightbot.autonomous;
+package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -6,15 +6,14 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
-import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
-import org.firstinspires.ftc.teamcode.logging.BetaLog;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
+import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 
 @Autonomous(name = "BlueRightAutoStorageDelay", group = "blueAuto")
-public class BlueRightAutoStorageDelay extends FreightBotAutonomous {
+public class BlueRightAutoStorageDelay extends FreightBotAutonomous_Old {
 
-    FreightBot bot = new FreightBot();
+    FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
     ButtonToggle toggleDPUp = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
         @Override
@@ -81,7 +80,7 @@ public class BlueRightAutoStorageDelay extends FreightBotAutonomous {
             driveToPosition(SLOW, x1, y1, 0, 1);
         }
 
-        bot.setIntakeState(FreightBot.IntakeState.CENTER_MID);
+        bot.setIntakeState(FreightBot_Old.IntakeState.CENTER_MID);
         rotateTapeAndAngleArm(armAngleTicks, markerPos);
         turnToHeading(45, 3, 8, 60);
 
