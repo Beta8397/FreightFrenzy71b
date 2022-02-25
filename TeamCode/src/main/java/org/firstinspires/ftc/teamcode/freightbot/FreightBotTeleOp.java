@@ -14,9 +14,10 @@ import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 public class FreightBotTeleOp extends MecBotTeleOp {
 
     static final float SPINNER_SPEED = 1f;
+    static final float STD_FLIPPER_POS = 0.44f;
     private boolean reversed = false;
-    private float intakeFlipperPosition = 0;
-    private float tapeElevationPosition = 0.5f * (FreightBot.TAPE_ELEVATION_MAX + FreightBot_Old.TAPE_ELEVATION_MIN);
+    private float intakeFlipperPosition = STD_FLIPPER_POS;
+    private float tapeElevationPosition = FreightBot.TAPE_ELEVATION_MIN;
     private boolean armRawPowerMode = false;
 
     FreightBot bot = new FreightBot();
@@ -37,9 +38,9 @@ public class FreightBotTeleOp extends MecBotTeleOp {
 
     @Override
     public void runOpMode() {
-        bot.init(hardwareMap, true);
+        bot.init(hardwareMap);
         super.setup(bot);
-//        bot.setIntakeFlipper(FreightBot_Old.INTAKE_FLIPPER_CENTER);
+        bot.setIntakeFlipper(STD_FLIPPER_POS);
         bot.setTapeElevation(tapeElevationPosition);
 
         waitForStart();
@@ -90,25 +91,29 @@ public class FreightBotTeleOp extends MecBotTeleOp {
             }
 
 
-            if (gamepad1.a){
+            if (gamepad1.y){
                 intakeFlipperPosition += 0.005;
                 intakeFlipperPosition = Range.clip(intakeFlipperPosition, 0, 1);
-                bot.intakeFlipper.setPosition(intakeFlipperPosition);
-            } else if (gamepad1.b){
+            } else if (gamepad1.x){
                 intakeFlipperPosition -= 0.005;
                 intakeFlipperPosition = Range.clip(intakeFlipperPosition, 0, 1);
-                bot.intakeFlipper.setPosition(intakeFlipperPosition);
+            } else if (gamepad1.a){
+                intakeFlipperPosition = 0.34f;
+            } else if (gamepad1.b){
+                intakeFlipperPosition = STD_FLIPPER_POS;
             }
+
+            bot.intakeFlipper.setPosition(intakeFlipperPosition);
 
             boolean toggledBR1 = toggleRbump1.update();
 
             if (bot.getIntakeWheelState() == FreightBot.IntakeWheelState.REVERSE){
-                if (!gamepad1.left_bumper) bot.setIntakeWheelState(FreightBot.IntakeWheelState.STOPPED);
+                if (!gamepad1.left_bumper && !gamepad2.a) bot.setIntakeWheelState(FreightBot.IntakeWheelState.STOPPED);
             } else if (bot.getIntakeWheelState() == FreightBot.IntakeWheelState.STOPPED){
-                if (gamepad1.left_bumper) bot.setIntakeWheelState(FreightBot.IntakeWheelState.REVERSE);
+                if (gamepad1.left_bumper || gamepad2.a) bot.setIntakeWheelState(FreightBot.IntakeWheelState.REVERSE);
                 else if (toggledBR1) bot.setIntakeWheelState(FreightBot.IntakeWheelState.FORWARD);
             } else {
-                if (gamepad1.left_bumper) bot.setIntakeWheelState(FreightBot.IntakeWheelState.REVERSE);
+                if (gamepad1.left_bumper || gamepad2.a) bot.setIntakeWheelState(FreightBot.IntakeWheelState.REVERSE);
                 else if (toggledBR1) bot.setIntakeWheelState(FreightBot.IntakeWheelState.STOPPED);
             }
 
@@ -146,11 +151,14 @@ public class FreightBotTeleOp extends MecBotTeleOp {
 
             telemetry.addData("right arm angle", rightArmAngleMotorPosition);
             telemetry.addData("left arm angle", leftArmAngleMotorPosition);
-            telemetry.addData("right target", bot.rightArmAngleMotor.getTargetPosition());
-            telemetry.addData("left target", bot.leftArmAngleMotor.getTargetPosition());
-            telemetry.addData("Intake Wheel State", bot.getIntakeWheelState());
-            telemetry.addData("Tape Elevation", tapeElevationPosition);
+//            telemetry.addData("right target", bot.rightArmAngleMotor.getTargetPosition());
+//            telemetry.addData("left target", bot.leftArmAngleMotor.getTargetPosition());
+            telemetry.addData("arm mode", bot.getArmAngleMode());
+//            telemetry.addData("Intake Wheel State", bot.getIntakeWheelState());
             telemetry.addData("Intake Flipper", intakeFlipperPosition);
+            telemetry.addData("Tape Elevation", tapeElevationPosition);
+            telemetry.addData("Tape Rotation", bot.tapeRotationEncoder.getCurrentPosition());
+            telemetry.addData("Tape Extension", bot.tapeExtensionEncoder.getCurrentPosition());
             telemetry.update();
         }
     }

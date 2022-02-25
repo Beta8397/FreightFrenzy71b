@@ -18,12 +18,13 @@ public class FreightBot extends MecBot {
     public CRServo spinnerCRServo;
     public CRServo intakeRightSpinner;
     public CRServo intakeLeftSpinner;
+
     public CRServo tapeExtensionCRServo;
+    public DcMotorEx tapeExtensionEncoder;
     public CRServo tapeRotationCRServo;
+    public DcMotorEx tapeRotationEncoder;
+
     public static final int MAX_ARM_ANGLE_TICKS = 2200;
-    public static final float INTAKE_FLIPPER_OUT = .661f; //was 0.66
-    public static final float INTAKE_FLIPPER_CENTER = 0.27f; //was 0.34
-    public static final float INTAKE_FLIPPER_IN = 0.17f; //was .17
     public static final float TAPE_ELEVATION_MIN = 0.09f;
     public static final float TAPE_ELEVATION_MAX = 0.77f;
 
@@ -52,7 +53,7 @@ public class FreightBot extends MecBot {
         super();
     }
 
-    public boolean init(HardwareMap hwMap, boolean resetArmAndIntake) {
+    public boolean init(HardwareMap hwMap) {
 
         boolean result = super.init(hwMap);
 
@@ -65,17 +66,20 @@ public class FreightBot extends MecBot {
         intakeRightSpinner = hwMap.get(CRServo.class, "intake_right_spinner");
         tapeElevationServo = hwMap.get(Servo.class, "tape_elevation_servo");
         tapeExtensionCRServo = hwMap.get(CRServo.class, "tape_extension_crservo");
+        tapeExtensionEncoder = hwMap.get(DcMotorEx.class, "tape_extension_encoder");
         tapeRotationCRServo = hwMap.get(CRServo.class, "tape_rotation_crservo");
+        tapeRotationEncoder = hwMap.get(DcMotorEx.class, "tape_rotation_encoder");
 
-        if (resetArmAndIntake) {
-            rightArmAngleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftArmAngleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+        rightArmAngleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftArmAngleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         rightArmAngleMotor.setTargetPosition(rightArmAngleMotor.getCurrentPosition());
         leftArmAngleMotor.setTargetPosition(leftArmAngleMotor.getCurrentPosition());
         rightArmAngleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftArmAngleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        tapeRotationEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tapeRotationEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         return result;
     }

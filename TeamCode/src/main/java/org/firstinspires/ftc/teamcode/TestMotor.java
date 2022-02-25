@@ -13,7 +13,7 @@ public class TestMotor extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        motor = hardwareMap.get(DcMotorEx.class, "motor");
+        motor = hardwareMap.get(DcMotorEx.class, "left_arm_angle_motor");
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         boolean running = false;
