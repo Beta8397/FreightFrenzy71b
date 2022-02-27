@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 
 @Disabled
 @Autonomous(name = "RedRightAutoCarousel", group = "redAuto")
-public class RedRightAutoCarousel extends FreightBotAutonomous_Old {
+public class RedRightAutoCarousel_Old extends FreightBotAutonomous_Old {
 
     FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;

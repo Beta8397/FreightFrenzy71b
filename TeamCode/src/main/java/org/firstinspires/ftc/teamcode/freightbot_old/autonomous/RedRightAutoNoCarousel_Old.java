@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -9,9 +10,9 @@ import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
 import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
 import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
-
-@Autonomous(name = "BlueRightAutoStorageDelay", group = "blueAuto")
-public class BlueRightAutoStorageDelay extends FreightBotAutonomous_Old {
+@Disabled
+@Autonomous(name = "RedRightAutoNoCarousel", group = "redAuto")
+public class RedRightAutoNoCarousel_Old extends FreightBotAutonomous_Old {
 
     FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
@@ -36,7 +37,9 @@ public class BlueRightAutoStorageDelay extends FreightBotAutonomous_Old {
         super.setBot(bot);
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         VuforiaNavigator.activate(null, webcam);
-        bot.setPose(-8, 104, 0);
+        bot.setPose(8, 66, 180);
+        telemetry.addData("press start when ready", "");
+        telemetry.update();
 
         while (!opModeIsActive() && !isStopRequested()) {
             telemetry.addData("delay (seconds)", delay);
@@ -55,52 +58,61 @@ public class BlueRightAutoStorageDelay extends FreightBotAutonomous_Old {
             telemetry.update();
         }
 
+        telemetry.addData("marker pos", markerPos);
+        telemetry.update();
+        // TODO everything else
+        telemetry.addData("first drive done", "");
+        telemetry.update();
         int armAngleTicks;
         float x1;
         float y1;
+        int barrierDriveX;
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = 610;
-            x1 = -20.5f; //was -18
-            y1 = 105f; //was 107.3
+            x1 = 21.5f;
+            y1 = 63.75f;
+            barrierDriveX = 25;
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 390;  //was 410
-            x1 = -18;
-            y1 = 105.8f;
+            armAngleTicks = 390; //was 410
+            x1 = 17; // was 19
+            y1 = 65; // was 63
+            barrierDriveX = 25;
         } else {
             armAngleTicks = 200;
-            x1 = -22; //was -23
-            y1 = 104f; // was 105
+            x1 = 21;
+            y1 = 65;
+            barrierDriveX = 21;
         }
+
         bot.setArmExtensionTicks(600);
 
-        //extendAndAngleArm(armAngleTicks, 450, markerPos);
         if (markerPos == MarkerPos.LEFT) {
-            driveToPosition(8, x1, y1, 0, 0.5f);
+            driveToPosition(8, x1, y1, 180, 1);
         } else {
-            driveToPosition(SLOW, x1, y1, 0, 1);
+            driveToPosition(SLOW, x1, y1, 180, 1);
         }
+
 
         bot.setIntakeState(FreightBot_Old.IntakeState.CENTER_MID);
         rotateTapeAndAngleArm(armAngleTicks, markerPos);
-        turnToHeading(45, 3, 8, 60);
+        turnToHeading(-135, 3, 8, 60);
 
+//        bot.setArmExtensionTicks(950);
+//        sleep(250);
+//        bot.setArmServoPosition(FreightBot.DUMPER_EXTENDED);
+//        sleep(1750);
+//        bot.setArmExtensionTicks(0);
+//        sleep(100);
+//        bot.setArmServoPosition(FreightBot.DUMPER_RETRACTED);
+//        bot.setArmAngleTicks(0);
 
         deliverShippingHub();
 
-        driveToPosition(SLOW, bot.getPose().x+2, bot.getPose().y+2,
-                (float)Math.toDegrees(bot.getHeadingRadians()), 1);        turnToHeading(45, 3, 8, 60);
+        turnToHeading(-90, 3, 8, 60);
+        driveToPosition(SLOW, 26, 65, -90, 1);
+        driveToPosition(SLOW, barrierDriveX, 75, -90, 1);
+        driveToPosition(FAST, barrierDriveX, 9, -90, 1);
 
-        turnToHeading(180, 3, 8, 90);
-
-        driveToPosition(SLOW, -20,bot.getPose().y,180,1);
-
-        driveToPosition(SLOW, bot.getPose().x,136,180,1);
-
-
-        carouselDrive(Alliance.BLUE);
-        bot.setSpeedSpinnerMotor(0);
-
-        driveToParkStorage(Alliance.BLUE);
 
     }
 }

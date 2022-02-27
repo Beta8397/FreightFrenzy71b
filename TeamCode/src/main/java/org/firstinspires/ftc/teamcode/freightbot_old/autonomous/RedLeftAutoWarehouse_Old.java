@@ -8,9 +8,8 @@ import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
 import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
 import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
 
-@Disabled
-@Autonomous(name = "RedLeftAutoWarehouse", group = "redAuto")
-public class RedLeftAutoWarehouse extends FreightBotAutonomous_Old {
+
+public class RedLeftAutoWarehouse_Old extends FreightBotAutonomous_Old {
 
     FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;

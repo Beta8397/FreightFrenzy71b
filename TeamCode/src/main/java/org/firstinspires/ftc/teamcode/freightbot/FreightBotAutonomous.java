@@ -22,6 +22,12 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
 
     public static final MotionProfile FAST = new MotionProfile(15, 45, 40);
 
+    public static final float FLIPPER_TOP = 0.57f;
+
+    public static final float FLIPPER_MID = 0.40f;
+
+    public static final float FLIPPER_BOTTOM = 0.29f;
+
     private FreightBot bot = null;
 
     public enum CameraStartPos {LEFT,RIGHT}
@@ -153,11 +159,50 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
 
         } else {
             bot.setPose(-17, 135);
-            driveToPosition(slowPark, -32f, 130,
+            driveToPosition(slowPark, -34f, 130,
                     (float)Math.toDegrees(bot.getPose().theta), 1);
             turnToHeading(-90, 3, 8, 90);
-            driveToPosition(slowPark, -32f, 136, -90, 1);
+            driveToPosition(slowPark, -34f, 136, -90, 1);
         }
+    }
+
+    public void driveToParkWarehouse (Alliance alliance) {
+        if (alliance == Alliance.RED) {
+            bot.setPose(17,135);
+            driveToPosition(SLOW,21,132,(float)Math.toDegrees(bot.getPose().theta),1);
+            turnToHeading(-90,3,8,90);
+            driveToPosition(FAST,28,9,-90,1);
+        } else {
+            bot.setPose(-17,135);
+            driveToPosition(SLOW,-21,132,(float)Math.toDegrees(bot.getPose().theta),1);
+            turnToHeading(-90,3,8,90);
+            driveToPosition(FAST,-28,9,-90,1);
+        }
+    }
+
+    public void pickUpTSE (int rotation, int extension, float elevation) {
+        positionTape(rotation,bot.tapeExtensionEncoder.getCurrentPosition(),FreightBot.TAPE_ELEVATION_MAX, 1,1000);
+        positionTape(rotation,extension,0.560f,1,2000);
+        positionTape(rotation,extension,elevation,1,1000);
+        positionTape(rotation,extension,0.185f,1,1000);
+        positionTape(-400,13500,0.185f,0.3f,3000);
+        positionTape(-400,13500,0.497f,1,1000);
+        positionTape(-400,0,0.497f,1,1000);
+        positionTape(-400,0,FreightBot.TAPE_ELEVATION_MAX,1,1000);
+        positionTape(0,0,FreightBot.TAPE_ELEVATION_MAX,0.5f,1000);
+
+    }
+
+    public void positionTape (int rotation, int extension, float elevation, float maxRotationPower, double delay) {
+        bot.setTapeElevation(elevation);
+        ElapsedTime et = new ElapsedTime();
+
+        while (opModeIsActive() && et.milliseconds() < delay) {
+            bot.updateTapeRotation(rotation,maxRotationPower);
+            bot.updateTapeExtension(extension);
+        }
+        bot.setTapeRotationPower(0);
+        bot.setTapeExtensionPower(0);
     }
 
 

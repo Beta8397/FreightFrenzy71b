@@ -1,34 +1,17 @@
 package org.firstinspires.ftc.teamcode.freightbot_old.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.cv.VuforiaNavigator;
 import org.firstinspires.ftc.teamcode.freightbot_old.FreightBot_Old;
 import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotAutonomous_Old;
-import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 
-@Autonomous(name = "RedLeftAutoStorageDelay", group = "redAuto")
-public class RedLeftAutoStorageDelay extends FreightBotAutonomous_Old {
+public class RedLeftAutoStorage_Old extends FreightBotAutonomous_Old {
 
     FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
-    ButtonToggle toggleDPUp = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
-        @Override
-        protected boolean getButtonState() {
-            return gamepad1.dpad_up;
-        }
-    };
-    ButtonToggle toggleDPDown = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
-        @Override
-        protected boolean getButtonState() {
-            return gamepad1.dpad_down;
-        }
-    };
-
-    double delay = 0;
 
     @Override
     public void runLoggingOpMode() {
@@ -40,33 +23,18 @@ public class RedLeftAutoStorageDelay extends FreightBotAutonomous_Old {
         bot.closeArmCapServo();
         telemetry.addData("press start when ready", "");
         telemetry.update();
-
-        while (!opModeIsActive() && !isStopRequested()) {
-            telemetry.addData("delay (seconds)", delay);
-            telemetry.addData("press start when ready", "");
-            telemetry.update();
-            if (toggleDPUp.update()) delay += 0.5;
-            if (toggleDPDown.update()) delay -= 0.5;
-            delay = Range.clip(delay,0,7);
-        }
-
+        waitForStart();
         MarkerPos markerPos = getMarkerPos(CameraStartPos.RIGHT);
-
-        ElapsedTime et = new ElapsedTime();
-        while (opModeIsActive() && et.seconds() < delay) {
-            telemetry.addData("countdown",(int)(delay-et.seconds()));
-            telemetry.update();
-        }
 
         int armAngleTicks;
         float x1;
         float y1;
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = 610;
-            x1 = 19.0f; //was 17.25
-            y1 = 107.5f; //was 109.25
+            x1 = 18.25f; //was 17.25
+            y1 = 108.25f; //was 109.25
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 390; // was 420
+            armAngleTicks = 420;
             x1 = 20f; //was 19
             y1 = 109.5f; //was 108.5
         } else {
@@ -77,14 +45,9 @@ public class RedLeftAutoStorageDelay extends FreightBotAutonomous_Old {
 
         bot.setArmExtensionTicks(600);
 
-        if (markerPos == MarkerPos.LEFT) {
-            driveToPosition(8, x1, y1, 180, 1);
-        } else {
-            driveToPosition(SLOW, x1, y1, 180, 1);
-        }
+        //extendAndAngleArm(armAngleTicks, 450, markerPos);
 
-
-        bot.setIntakeState(FreightBot_Old.IntakeState.CENTER_MID);
+        driveToPosition(SLOW, x1, y1, 180, 1);
         rotateTapeAndAngleArm(armAngleTicks, markerPos);
         turnToHeading(135, 3, 8, 60);
 

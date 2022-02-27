@@ -6,15 +6,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.i2c.BNO055Enhanced;
 import org.firstinspires.ftc.teamcode.mecbot.MecBot;
+
+import java.util.Random;
 
 public class FreightBot extends MecBot {
     public DcMotorEx rightArmAngleMotor;
     public DcMotorEx leftArmAngleMotor;
     public Servo intakeFlipper;
     public Servo tapeElevationServo;
+    public Servo capHolderServo;
     public CRServo spinnerCRServo;
     public CRServo intakeRightSpinner;
     public CRServo intakeLeftSpinner;
@@ -27,6 +31,10 @@ public class FreightBot extends MecBot {
     public static final int MAX_ARM_ANGLE_TICKS = 2200;
     public static final float TAPE_ELEVATION_MIN = 0.09f;
     public static final float TAPE_ELEVATION_MAX = 0.77f;
+    public static final float TAPE_ROTATION_COEFF = 0.001f;
+    public static final float TAPE_EXTENSION_COEFF = 0.0001f;
+    public static final float CAP_SERVO_OPENED = 1f;
+    public static final float CAP_SERVO_CLOSED = 0.27f;
 
     public enum IntakeWheelState {
         STOPPED, FORWARD, REVERSE
@@ -69,6 +77,7 @@ public class FreightBot extends MecBot {
         tapeExtensionEncoder = hwMap.get(DcMotorEx.class, "tape_extension_encoder");
         tapeRotationCRServo = hwMap.get(CRServo.class, "tape_rotation_crservo");
         tapeRotationEncoder = hwMap.get(DcMotorEx.class, "tape_rotation_encoder");
+        capHolderServo = hwMap.get(Servo.class,"cap_holder_servo");
 
         rightArmAngleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftArmAngleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -80,6 +89,9 @@ public class FreightBot extends MecBot {
 
         tapeRotationEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         tapeRotationEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        tapeExtensionEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tapeExtensionEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         return result;
     }
@@ -157,5 +169,24 @@ public class FreightBot extends MecBot {
         tapeRotationCRServo.setPower(power);
     }
 
+    public void updateTapeRotation(int target, float maxPower) {
+        float power = -TAPE_ROTATION_COEFF * (target - tapeRotationEncoder.getCurrentPosition());
+        power = Range.clip(power,-maxPower,maxPower);
+        tapeRotationCRServo.setPower(power);
+    }
+
+    public void updateTapeExtension(int target) {
+        float power = TAPE_EXTENSION_COEFF * (target - tapeExtensionEncoder.getCurrentPosition());
+        power = Range.clip(power,-1,1);
+        tapeExtensionCRServo.setPower(power);
+    }
+
+    public void openCapHolderServo() {
+        capHolderServo.setPosition(CAP_SERVO_OPENED);
+    }
+
+    public void closeCapHolderServo() {
+        capHolderServo.setPosition(CAP_SERVO_CLOSED);
+    }
 
 }

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.freightbot_old.FreightBotTeleOp_Old;
 
 @Disabled
 @Autonomous(name = "RedLeftAutoWarehouseRemote", group = "redAuto")
-public class RedLeftAutoWarehouseRemote extends FreightBotAutonomous_Old {
+public class RedLeftAutoWarehouseRemote_Old extends FreightBotAutonomous_Old {
 
     FreightBot_Old bot = new FreightBot_Old();
     WebcamName webcam = null;
