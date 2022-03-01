@@ -185,8 +185,8 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
         positionTape(rotation,extension,0.560f,1,2000);
         positionTape(rotation,extension,elevation,1,1000);
         positionTape(rotation,extension,0.185f,1,1000);
-        positionTape(-400,13500,0.185f,0.3f,3000);
-        positionTape(-400,13500,0.497f,1,1000);
+        positionTape(-400,14000,0.185f,0.3f,3000);
+        positionTape(-400,14000,0.497f,1,1000);
         positionTape(-400,0,0.497f,1,1000);
         positionTape(-400,0,FreightBot.TAPE_ELEVATION_MAX,1,1000);
         positionTape(0,0,FreightBot.TAPE_ELEVATION_MAX,0.5f,1000);

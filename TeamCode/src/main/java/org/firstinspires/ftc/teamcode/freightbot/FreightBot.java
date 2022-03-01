@@ -35,9 +35,10 @@ public class FreightBot extends MecBot {
     public static final float TAPE_EXTENSION_COEFF = 0.0001f;
     public static final float CAP_SERVO_OPENED = 1f;
     public static final float CAP_SERVO_CLOSED = 0.27f;
+    public static final float CAP_SERVO_MID = 0.5f * (CAP_SERVO_OPENED + CAP_SERVO_CLOSED);
 
     public enum IntakeWheelState {
-        STOPPED, FORWARD, REVERSE
+        STOPPED, FORWARD, REVERSE, SLOW_FORWARD
     }
 
     private IntakeWheelState intakeWheelState = IntakeWheelState.STOPPED;
@@ -108,8 +109,10 @@ public class FreightBot extends MecBot {
             setIntakePower(0);
         } else if (intakeWheelState == IntakeWheelState.FORWARD) {
             setIntakePower(1);
+        } else if (intakeWheelState == IntakeWheelState.REVERSE){
+            setIntakePower(-.3);
         } else {
-            setIntakePower(-.4);
+            setIntakePower(.1);
         }
     }
 

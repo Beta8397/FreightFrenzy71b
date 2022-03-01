@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.logging.LoggingLinearOpMode;
+import org.firstinspires.ftc.teamcode.util.AngleUtils;
+import org.firstinspires.ftc.teamcode.util.Updatable;
 import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +40,8 @@ public abstract class MecBotTeleOp extends LinearOpMode {
     private boolean telemetryEnabled = true;
     private boolean fieldCentric = false;
     private float px, py, pa;
+    private boolean autoDirectionControl = false;
+    private float targetHeadingRadians = 0;
 
     //Set up gamepad buttons as toggles
 
@@ -57,9 +61,13 @@ public abstract class MecBotTeleOp extends LinearOpMode {
         }
     };
 
+    private ButtonToggle toggleB1 = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
+        protected boolean getButtonState() { return gamepad1.b; }
+    };
+
 
     protected static final float SLOW_MODE_SCALER = 3.0f;
-    protected static final float FAST_MODE_SCALER = 2f;
+    protected static final float FAST_MODE_SCALER = 2.1f;
     protected static final float JOYSTICK_DEADZONE = 0.05f;
     protected static final float TRIGGER_DEADZONE = 0.05f;
 
@@ -79,9 +87,9 @@ public abstract class MecBotTeleOp extends LinearOpMode {
              speedMode = speedMode == SpeedMode.SLOW? SpeedMode.FAST: SpeedMode.SLOW;
 
         }
-        if (toggleD1left.update()) {
-            speedMode = speedMode == SpeedMode.PANIC? SpeedMode.FAST: SpeedMode.PANIC;
-        }
+//        if (toggleD1left.update()) {
+//            speedMode = speedMode == SpeedMode.PANIC? SpeedMode.FAST: SpeedMode.PANIC;
+//        }
         if (toggleD1down.update()) {
             quadMode = !quadMode;
         }
@@ -120,6 +128,18 @@ public abstract class MecBotTeleOp extends LinearOpMode {
             px /= FAST_MODE_SCALER;
             py /= FAST_MODE_SCALER;
             pa /= FAST_MODE_SCALER;
+        }
+
+        if (toggleB1.update() && !autoDirectionControl) {
+            autoDirectionControl = true;
+            targetHeadingRadians = bot.getHeadingRadians();
+        } else if (autoDirectionControl && !gamepad1.b) {
+            autoDirectionControl = false;
+        }
+
+        if (autoDirectionControl) {
+            float headingOffset = (float)AngleUtils.normalizeRadians(targetHeadingRadians-bot.getHeadingRadians());
+            pa = 0.75f * headingOffset;
         }
 
         bot.setDrivePower( px,  py,  pa);

@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
 import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
 import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 
-@Autonomous(name = "BlueLeftAutoWarehouse", group = "blueAuto")
-public class BlueLeftAutoWarehouse extends FreightBotAutonomous {
+@Autonomous(name = "BlueLeftAutoTSE", group = "blueAuto")
+public class BlueLeftAutoTSE extends FreightBotAutonomous {
 
     FreightBot bot = new FreightBot();
     WebcamName webcam = null;
@@ -76,6 +76,14 @@ public class BlueLeftAutoWarehouse extends FreightBotAutonomous {
             x1 = -32f; //was -23
             y1 = 68f; // was 105
         }
+
+        int rotationTicks = markerPos == MarkerPos.LEFT? -2954 : markerPos == MarkerPos.CENTER? -2514 : -2117;
+        int extensionTicks = markerPos == MarkerPos.LEFT? 23707 : markerPos == MarkerPos.CENTER? 24554 : 30575;
+        float tapeElevation = markerPos == MarkerPos.LEFT? 0.620f : markerPos == MarkerPos.CENTER? 0.604f : 0.582f;
+
+        pickUpTSE(rotationTicks,extensionTicks,tapeElevation);
+        bot.closeCapHolderServo();
+
 
         bot.setArmAngleTicks(armAngleTicks);
         bot.setIntakeFlipper(flipperPosition);

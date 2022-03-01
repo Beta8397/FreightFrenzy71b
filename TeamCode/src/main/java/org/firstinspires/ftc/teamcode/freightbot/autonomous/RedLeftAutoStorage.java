@@ -37,6 +37,7 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         VuforiaNavigator.activate(null, webcam);
         bot.setPose(8, 114, 0);
+        bot.openCapHolderServo();
 
         while (!opModeIsActive() && !isStopRequested()) {
             telemetry.addData("delay (seconds)", delay);
