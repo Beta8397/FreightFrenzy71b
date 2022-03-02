@@ -63,17 +63,17 @@ public class BlueRightAutoStorage extends FreightBotAutonomous {
         float y1;
         float flipperPosition;
         if (markerPos == MarkerPos.LEFT) {
-            armAngleTicks = 70;
+            armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
             x1 = -32f; //was -18
             y1 = 96f; //was 107.3
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 320;  //was 410
+            armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
             x1 = -32f;
             y1 = 98f;
         } else {
-            armAngleTicks = 615;
+            armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
             x1 = -32f; //was -23
             y1 = 98f; // was 105
@@ -94,7 +94,7 @@ public class BlueRightAutoStorage extends FreightBotAutonomous {
         driveToPosition(12,-20f,111,-135,1);
         bot.setIntakePower(0);
         bot.setArmAngleTicks(0);
-        bot.setIntakeFlipper(0.3f);
+        bot.setIntakeFlipper(FLIPPER_BARRIER);
 
         turnToHeading(180, 3, 8, 90);
 

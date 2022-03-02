@@ -61,17 +61,17 @@ public class BlueLeftAutoWarehouse extends FreightBotAutonomous {
         float y1;
         float flipperPosition;
         if (markerPos == MarkerPos.LEFT) {
-            armAngleTicks = 70;
+            armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
-            x1 = -32f; //was -18
-            y1 = 68f; //was 107.3
+            x1 = -32.5f; //was -18
+            y1 = 68.5f; //was 107.3
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 320;  //was 410
+            armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
             x1 = -32f;
             y1 = 68f;
         } else {
-            armAngleTicks = 615;
+            armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
             x1 = -32f; //was -23
             y1 = 68f; // was 105
@@ -90,8 +90,8 @@ public class BlueLeftAutoWarehouse extends FreightBotAutonomous {
         turnToHeading(-90, 3, 8, 60);
         driveToPosition(SLOW, -24f, 75, -90, 1);
         bot.setArmAngleTicks(200);
-        bot.setIntakeFlipper(0.3f);
-        sleep(500);
+        bot.setIntakeFlipper(FLIPPER_BARRIER);
+        sleep(750);
         bot.setIntakePower(0);
 
         driveToPosition(FAST, -24f, 9, -90, 1);

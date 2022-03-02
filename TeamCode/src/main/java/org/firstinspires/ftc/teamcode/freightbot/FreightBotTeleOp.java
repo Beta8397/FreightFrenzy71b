@@ -16,7 +16,7 @@ public class FreightBotTeleOp extends MecBotTeleOp {
     private enum TapeOperationState {ROTATING, ELEVATING, EXTENDING, DESCENDING}
 
     static final float SPINNER_SPEED = 1f;
-    static final float STD_FLIPPER_POS = 0.41f;
+    static final float STD_FLIPPER_POS = 0.73f;
     private boolean reversed = false;
     private float intakeFlipperPosition = STD_FLIPPER_POS;
     private float tapeElevationPosition = FreightBot.TAPE_ELEVATION_MAX;
@@ -161,16 +161,6 @@ public class FreightBotTeleOp extends MecBotTeleOp {
             }
 
 
-            if (bot.getIntakeWheelState() == FreightBot.IntakeWheelState.REVERSE){
-                if (!gamepad1.left_bumper && !gamepad2.a) bot.setIntakeWheelState(FreightBot.IntakeWheelState.STOPPED);
-            } else if (bot.getIntakeWheelState() == FreightBot.IntakeWheelState.STOPPED){
-                if (gamepad1.left_bumper || gamepad2.a) bot.setIntakeWheelState(FreightBot.IntakeWheelState.REVERSE);
-                else if (toggledBR1) bot.setIntakeWheelState(FreightBot.IntakeWheelState.FORWARD);
-            } else {
-                if (gamepad1.left_bumper || gamepad2.a) bot.setIntakeWheelState(FreightBot.IntakeWheelState.REVERSE);
-                else if (toggledBR1) bot.setIntakeWheelState(FreightBot.IntakeWheelState.STOPPED);
-            }
-
             boolean y2Toggled = toggleY2.update();
             boolean x2Toggled = toggleX2.update();
 
@@ -233,6 +223,7 @@ public class FreightBotTeleOp extends MecBotTeleOp {
             telemetry.addData("Tape Extension", bot.tapeExtensionEncoder.getCurrentPosition());
             telemetry.addData("Tape Extension Power",bot.tapeExtensionCRServo.getPower());
             telemetry.addData("Tape Rotation Power", bot.tapeRotationCRServo.getPower());
+            telemetry.addData("Inake Wheel State", bot.getIntakeWheelState());
             telemetry.update();
         }
     }

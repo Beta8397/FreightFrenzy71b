@@ -61,25 +61,25 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
         float y1;
         float flipperPosition;
         if (markerPos == MarkerPos.LEFT) {
-            armAngleTicks = 70;
+            armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
-            x1 = -32f; //was -18
-            y1 = 68f; //was 107.3
+            x1 = -32.5f;
+            y1 = 68.5f;
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 320;  //was 410
+            armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
             x1 = -32f;
             y1 = 68f;
         } else {
-            armAngleTicks = 615;
+            armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
-            x1 = -32f; //was -23
-            y1 = 68f; // was 105
+            x1 = -32f;
+            y1 = 68f;
         }
 
-        int rotationTicks = markerPos == MarkerPos.LEFT? -2954 : markerPos == MarkerPos.CENTER? -2514 : -2117;
-        int extensionTicks = markerPos == MarkerPos.LEFT? 23707 : markerPos == MarkerPos.CENTER? 24554 : 30575;
-        float tapeElevation = markerPos == MarkerPos.LEFT? 0.620f : markerPos == MarkerPos.CENTER? 0.604f : 0.582f;
+        int rotationTicks = markerPos == MarkerPos.LEFT? -3099 : markerPos == MarkerPos.CENTER? -2580 : -2135;
+        int extensionTicks = markerPos == MarkerPos.LEFT? 23707 : markerPos == MarkerPos.CENTER? 27016 : 31688;
+        float tapeElevation = markerPos == MarkerPos.LEFT? 0.64f : markerPos == MarkerPos.CENTER? 0.6f : 0.594f;
 
         pickUpTSE(rotationTicks,extensionTicks,tapeElevation);
         bot.closeCapHolderServo();
@@ -98,8 +98,8 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
         turnToHeading(-90, 3, 8, 60);
         driveToPosition(SLOW, -24f, 75, -90, 1);
         bot.setArmAngleTicks(200);
-        bot.setIntakeFlipper(0.3f);
-        sleep(500);
+        bot.setIntakeFlipper(FLIPPER_BARRIER);
+        sleep(750);
         bot.setIntakePower(0);
 
         driveToPosition(FAST, -24f, 9, -90, 1);

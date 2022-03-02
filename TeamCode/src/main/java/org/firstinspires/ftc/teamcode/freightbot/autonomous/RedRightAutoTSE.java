@@ -62,17 +62,17 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
         float y1;
         float flipperPosition;
         if (markerPos == MarkerPos.LEFT) {
-            armAngleTicks = 70;
+            armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
             x1 = 30.5f;
             y1 = 74f;
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 320;  //was 410
+            armAngleTicks = ARM_MID;
             flipperPosition = FLIPPER_MID;
             x1 = 30f;
             y1 = 73.5f;
         } else {
-            armAngleTicks = 615;
+            armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
             x1 = 30.5f;
             y1 = 74f;
@@ -103,7 +103,7 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
         driveToPosition(SLOW, 28f, 75, -90, 1);
         bot.setIntakePower(0);
         bot.setArmAngleTicks(200);
-        bot.setIntakeFlipper(0.3f);
+        bot.setIntakeFlipper(FLIPPER_BARRIER);
         sleep(500);
         bot.setSpeedSpinnerMotor(0);
 

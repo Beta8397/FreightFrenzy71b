@@ -61,17 +61,17 @@ public class RedRightAutoWarehouse extends FreightBotAutonomous {
         float y1;
         float flipperPosition;
         if (markerPos == MarkerPos.LEFT) {
-            armAngleTicks = 70;
+            armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
             x1 = 34f; //was -18
             y1 = 70.5f; //was 107.3
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = 320;  //was 410
+            armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
             x1 = 34f;
             y1 = 70.5f;
         } else {
-            armAngleTicks = 615;
+            armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
             x1 = 34f; //was -23
             y1 = 70.5f; // was 105
@@ -92,7 +92,7 @@ public class RedRightAutoWarehouse extends FreightBotAutonomous {
         driveToPosition(SLOW, 24f, 75, -90, 1);
         bot.setIntakePower(0);
         bot.setArmAngleTicks(200);
-        bot.setIntakeFlipper(0.3f);
+        bot.setIntakeFlipper(FLIPPER_BARRIER);
         sleep(500);
         bot.setSpeedSpinnerMotor(0);
 

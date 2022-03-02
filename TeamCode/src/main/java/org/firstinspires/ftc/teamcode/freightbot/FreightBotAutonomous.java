@@ -22,11 +22,14 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
 
     public static final MotionProfile FAST = new MotionProfile(15, 45, 40);
 
-    public static final float FLIPPER_TOP = 0.57f;
+    public static final float FLIPPER_TOP = 0.89f;
+    public static final float FLIPPER_MID = 0.72f;
+    public static final float FLIPPER_BOTTOM = 0.61f;
+    public static final float FLIPPER_BARRIER = 0.62f;
+    public static final int ARM_TOP = 615;
+    public static final int ARM_MID = 320;
+    public static final int ARM_BOTTOM = 70;
 
-    public static final float FLIPPER_MID = 0.40f;
-
-    public static final float FLIPPER_BOTTOM = 0.29f;
 
     private FreightBot bot = null;
 
@@ -99,7 +102,7 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
     }
 
     public void carouselDrive(Alliance alliance) {
-        bot.setSpeedSpinnerMotor(alliance == Alliance.RED? -0.3f : .3f);
+        bot.setSpeedSpinnerMotor(alliance == Alliance.RED? -0.2f : .2f);
 
         float x0 = bot.getPose().x;
         float y0 = bot.getPose().y;
@@ -124,7 +127,7 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
                 againstCarousel = true;
             }
 
-            if (et.seconds() > 6) break;
+            if (et.seconds() > 8) break;
 
             VectorF vRobot;
             float va;
