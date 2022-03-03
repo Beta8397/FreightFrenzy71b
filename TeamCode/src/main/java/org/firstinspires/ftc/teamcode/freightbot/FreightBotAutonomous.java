@@ -23,11 +23,11 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
     public static final MotionProfile FAST = new MotionProfile(15, 45, 40);
 
     public static final float FLIPPER_TOP = 0.89f;
-    public static final float FLIPPER_MID = 0.72f;
+    public static final float FLIPPER_MID = 0.82f;
     public static final float FLIPPER_BOTTOM = 0.61f;
     public static final float FLIPPER_BARRIER = 0.62f;
-    public static final int ARM_TOP = 615;
-    public static final int ARM_MID = 320;
+    public static final int ARM_TOP = 510;
+    public static final int ARM_MID = 270;
     public static final int ARM_BOTTOM = 70;
 
 
@@ -172,9 +172,9 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
     public void driveToParkWarehouse (Alliance alliance) {
         if (alliance == Alliance.RED) {
             bot.setPose(17,135);
-            driveToPosition(SLOW,21,132,(float)Math.toDegrees(bot.getPose().theta),1);
+            driveToPosition(SLOW,30,90,(float)Math.toDegrees(bot.getPose().theta),1);
             turnToHeading(-90,3,8,90);
-            driveToPosition(FAST,28,9,-90,1);
+            driveToPosition(FAST,34,9,-90,1);
         } else {
             bot.setPose(-17,135);
             driveToPosition(SLOW,-21,132,(float)Math.toDegrees(bot.getPose().theta),1);
@@ -185,13 +185,36 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
 
     public void pickUpTSE (int rotation, int extension, float elevation) {
         positionTape(rotation,bot.tapeExtensionEncoder.getCurrentPosition(),FreightBot.TAPE_ELEVATION_MAX, 1,1000);
-        positionTape(rotation,extension,0.560f,1,2000);
+        positionTape(rotation,extension,0.560f,1,2750); // was 2000
         positionTape(rotation,extension,elevation,1,1000);
         positionTape(rotation,extension,0.185f,1,1000);
         positionTape(-400,14000,0.185f,0.3f,3000);
         positionTape(-400,14000,0.497f,1,1000);
         positionTape(-400,0,0.497f,1,1000);
         positionTape(-400,0,FreightBot.TAPE_ELEVATION_MAX,1,1000);
+        positionTape(0,0,FreightBot.TAPE_ELEVATION_MAX,0.5f,1000);
+
+    }
+
+    public void pickUpTSEMulti (int rotation, int extension, float elevation) {
+        int dR = 70;
+        float dEL = .05f;
+        positionTape(rotation+dR,bot.tapeExtensionEncoder.getCurrentPosition(),FreightBot.TAPE_ELEVATION_MAX, 1,1000);
+        positionTape(rotation+dR,extension,0.560f,1,2750); // was 2000
+
+        positionTape(rotation + dR,extension,elevation,1,1000);
+        positionTape(rotation + dR,extension,elevation - dEL,1,200);
+        positionTape(rotation,extension,elevation - dEL,1,500);
+        positionTape(rotation,extension,elevation,1,200);
+        positionTape(rotation,extension,elevation - dEL,1,200);
+        positionTape(rotation - dR,extension,elevation - dEL,1,500);
+        positionTape(rotation - dR,extension,elevation,1,300);
+
+        positionTape(rotation - dR,extension,0.185f,1,1000);
+        positionTape(-450,13000,0.185f,0.3f,3000);
+        positionTape(-450,13000,0.497f,1,1000);
+        positionTape(-450,0,0.497f,1,1000);
+        positionTape(-450,0,FreightBot.TAPE_ELEVATION_MAX,1,1000);
         positionTape(0,0,FreightBot.TAPE_ELEVATION_MAX,0.5f,1000);
 
     }

@@ -29,6 +29,7 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
     };
 
     double delay = 0;
+    float headingAngleDegrees = 135;  //was 150
 
     @Override
     public void runLoggingOpMode() {
@@ -63,25 +64,27 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
-            x1 = -32.5f;
-            y1 = 68.5f;
+            x1 = -31.5f;//  was -28.8
+            y1 = 69.5f; //  was 71.5
         } else if (markerPos == MarkerPos.CENTER) {
-            armAngleTicks = ARM_MID;  //was 410
+            armAngleTicks = ARM_MID;
             flipperPosition = FLIPPER_MID;
-            x1 = -32f;
-            y1 = 68f;
+            x1 = -31f; //   was -28.8
+            y1 = 69f; //  was 71.5
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
-            x1 = -32f;
-            y1 = 68f;
+            x1 = -31f; //   was -28.8
+            y1 = 69f; //   was 71.5
         }
 
-        int rotationTicks = markerPos == MarkerPos.LEFT? -3099 : markerPos == MarkerPos.CENTER? -2580 : -2135;
-        int extensionTicks = markerPos == MarkerPos.LEFT? 23707 : markerPos == MarkerPos.CENTER? 27016 : 31688;
-        float tapeElevation = markerPos == MarkerPos.LEFT? 0.64f : markerPos == MarkerPos.CENTER? 0.6f : 0.594f;
+        // Rotation 200 = 10 degrees
+        // Extension 1000 = 1 inch, center extension was 26216
+        int rotationTicks = markerPos == MarkerPos.LEFT? -3099 : markerPos == MarkerPos.CENTER? -2550 : -2175; // was -3099, -2580, -2175
+        int extensionTicks = markerPos == MarkerPos.LEFT? 23707 : markerPos == MarkerPos.CENTER? 25500 : 31200; // was 23707, 27016, 31688
+        float tapeElevation = markerPos == MarkerPos.LEFT? 0.64f : markerPos == MarkerPos.CENTER? 0.6f : 0.594f; // was 0.64f, 0.6f, 0.594f
 
-        pickUpTSE(rotationTicks,extensionTicks,tapeElevation);
+        pickUpTSEMulti(rotationTicks,extensionTicks,tapeElevation);
         bot.closeCapHolderServo();
 
 
@@ -90,11 +93,11 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
 
         driveToPosition(12,x1,y1,180,1);
 
-        turnToHeading(135, 3, 8, 60);
+        turnToHeading(headingAngleDegrees, 3, 8, 60);
 
         bot.setIntakePower(-0.2);
         sleep(1000);
-        driveToPosition(SLOW, -24, bot.getPose().y, 135, 1);
+        driveToPosition(SLOW, -24, bot.getPose().y, headingAngleDegrees, 1);
         turnToHeading(-90, 3, 8, 60);
         driveToPosition(SLOW, -24f, 75, -90, 1);
         bot.setArmAngleTicks(200);

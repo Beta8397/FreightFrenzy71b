@@ -53,9 +53,9 @@ public class FreightBotTeleOp extends MecBotTeleOp {
         @Override
         protected boolean getButtonState() { return gamepad2.x; }
     };
-    ButtonToggle toggleRightTrig2 = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
+    ButtonToggle toggleLeftTrig2 = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
         @Override
-        protected boolean getButtonState() { return gamepad2.right_trigger > 0.25f; }
+        protected boolean getButtonState() { return gamepad2.left_trigger > 0.25f; }
     };
 
 
@@ -85,8 +85,8 @@ public class FreightBotTeleOp extends MecBotTeleOp {
                 bot.setSpeedSpinnerMotor(0);
             }
 
-            if (toggleRightTrig2.update()) {
-                if (bot.capHolderServo.getPosition() < FreightBot.CAP_SERVO_MID) {
+            if (toggleLeftTrig2.update()) {
+                if (bot.capHolderServo.getPosition() > FreightBot.CAP_SERVO_MID) {
                     bot.closeCapHolderServo();
                 } else {
                     bot.openCapHolderServo();
