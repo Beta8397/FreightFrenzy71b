@@ -70,8 +70,8 @@ public class BlueRightAutoStorage extends FreightBotAutonomous {
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
-            x1 = -32f;
-            y1 = 98f;
+            x1 = -31.5f; // was -32
+            y1 = 98.5f;  // was 98
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;

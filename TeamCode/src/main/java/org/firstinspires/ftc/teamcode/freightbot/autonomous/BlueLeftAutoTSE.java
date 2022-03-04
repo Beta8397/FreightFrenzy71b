@@ -69,8 +69,8 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = ARM_MID;
             flipperPosition = FLIPPER_MID;
-            x1 = -31f; //   was -28.8
-            y1 = 69f; //  was 71.5
+            x1 = -30.5f; //   was -31
+            y1 = 68.5f; //  was 69
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;

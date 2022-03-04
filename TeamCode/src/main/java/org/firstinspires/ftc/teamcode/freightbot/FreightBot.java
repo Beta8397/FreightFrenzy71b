@@ -110,7 +110,7 @@ public class FreightBot extends MecBot {
         } else if (intakeWheelState == IntakeWheelState.FORWARD) {
             setIntakePower(1);
         } else if (intakeWheelState == IntakeWheelState.REVERSE){
-            setIntakePower(-.3);
+            setIntakePower(-.25);
         } else {
             setIntakePower(.1);
         }

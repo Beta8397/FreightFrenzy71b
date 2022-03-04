@@ -78,13 +78,11 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
             y1 = 74f;
         }
 
-//        bot.setArmAngleTicks(1000);
-//        sleep(1000);
         int rotationTicks = markerPos == MarkerPos.LEFT? -2855 : markerPos == MarkerPos.CENTER? -2380 : -2030;
         int extensionTicks = markerPos == MarkerPos.LEFT? 23453 : markerPos == MarkerPos.CENTER? 27700 : 33382;
         float tapeElevation = markerPos == MarkerPos.LEFT? 0.614f : markerPos == MarkerPos.CENTER? 0.599f : 0.590f;
 
-        pickUpTSE(rotationTicks,extensionTicks,tapeElevation);
+        pickUpTSEMulti(rotationTicks,extensionTicks,tapeElevation);
         bot.closeCapHolderServo();
 
 

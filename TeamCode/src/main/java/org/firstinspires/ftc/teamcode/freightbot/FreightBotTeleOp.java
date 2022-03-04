@@ -14,17 +14,21 @@ import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 public class FreightBotTeleOp extends MecBotTeleOp {
 
     private enum TapeOperationState {ROTATING, ELEVATING, EXTENDING, DESCENDING}
+    private enum ArmMode {STANDARD,PROPORTIONATE,RAW}
 
     static final float SPINNER_SPEED = 1f;
     static final float STD_FLIPPER_POS = 0.73f;
     private boolean reversed = false;
     private float intakeFlipperPosition = STD_FLIPPER_POS;
     private float tapeElevationPosition = FreightBot.TAPE_ELEVATION_MAX;
+    private ArmMode armMode = ArmMode.PROPORTIONATE;
     private boolean altMode = false;
     private int tapeRotationTarget = 0;
     private int tapeExtensionTarget = 0;
 
     private Updatable autoTapeControl = null;
+    private float armAngleTargetTicksProportionate = 0;
+    private int armAngleTargetTicksStandard = 0;
 
 
     FreightBot bot = new FreightBot();
@@ -94,37 +98,37 @@ public class FreightBotTeleOp extends MecBotTeleOp {
             }
 
             if (toggleStart2.update()) {
-                if (altMode) {
-                    altMode = false;
-                    bot.leftArmAngleMotor.setPower(0);
-                    bot.rightArmAngleMotor.setPower(0);
-                    bot.setArmAngleMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    bot.setArmAngleMode(DcMotor.RunMode.RUN_TO_POSITION);
-                } else {
-                    altMode = true;
-                    bot.leftArmAngleMotor.setPower(0);
-                    bot.rightArmAngleMotor.setPower(0);
-                    bot.setArmAngleMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                }
+                bot.setArmAngleMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                armAngleTargetTicksProportionate = 0;
+                armAngleTargetTicksStandard = 0;
+                armMode = armMode == ArmMode.STANDARD? ArmMode.PROPORTIONATE :
+                        armMode == ArmMode.PROPORTIONATE? ArmMode.RAW :
+                                ArmMode.STANDARD;
+                bot.setArmAngleMode(armMode == ArmMode.STANDARD? DcMotor.RunMode.RUN_TO_POSITION :
+                        DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
-            if (altMode) {
+
+            if (armMode == ArmMode.RAW) {
                 float pwr = -gamepad2.left_stick_y;
                 bot.leftArmAngleMotor.setPower(pwr);
                 bot.rightArmAngleMotor.setPower(pwr);
-            } else {
-
+            } else if (armMode == ArmMode.STANDARD){
                 int armAnglePower = 0;
-
-                armAnglePower = (int) (-120.0 * gamepad2.left_stick_y);
-
-
+                armAnglePower = (int) (-10.0 * gamepad2.left_stick_y);
                 if (armAnglePower != 0) {
-                    int newArmAnglePosition = armAnglePower + rightArmAngleMotorPosition;
-                    newArmAnglePosition = Range.clip(newArmAnglePosition, 0, FreightBot.MAX_ARM_ANGLE_TICKS);
-
-                    bot.setArmAngleTicks(newArmAnglePosition);
+                    armAngleTargetTicksStandard += armAnglePower;
+                    armAngleTargetTicksStandard = Range.clip(armAngleTargetTicksStandard, 0, FreightBot.MAX_ARM_ANGLE_TICKS);
+                    bot.setArmAngleTicks(armAngleTargetTicksStandard);
                 }
+            } else {
+                int avgArmPosition = (int)(0.5 * (leftArmAngleMotorPosition + rightArmAngleMotorPosition));
+                float armAnglePower = 0;
+                armAnglePower = -10.0f * gamepad2.left_stick_y;
+                armAngleTargetTicksProportionate += armAnglePower;
+                float armAngleOffSet = armAngleTargetTicksProportionate - avgArmPosition;
+                bot.leftArmAngleMotor.setPower(0.003 * armAngleOffSet);
+                bot.rightArmAngleMotor.setPower(0.003 * armAngleOffSet);
             }
 
 
@@ -191,11 +195,11 @@ public class FreightBotTeleOp extends MecBotTeleOp {
 
 
                 if (gamepad2.dpad_down) {
-                    tapeElevationPosition += 0.002f;
+                    tapeElevationPosition += 0.003f;
                     tapeElevationPosition = Range.clip(tapeElevationPosition, FreightBot_Old.TAPE_ELEVATION_MIN,
                             FreightBot_Old.TAPE_ELEVATION_MAX);
                 } else if (gamepad2.dpad_up) {
-                    tapeElevationPosition -= 0.002f;
+                    tapeElevationPosition -= 0.003f;
                     tapeElevationPosition = Range.clip(tapeElevationPosition, FreightBot_Old.TAPE_ELEVATION_MIN,
                             FreightBot_Old.TAPE_ELEVATION_MAX);
                 }
@@ -215,7 +219,7 @@ public class FreightBotTeleOp extends MecBotTeleOp {
             telemetry.addData("left arm angle", leftArmAngleMotorPosition);
 //            telemetry.addData("right target", bot.rightArmAngleMotor.getTargetPosition());
 //            telemetry.addData("left target", bot.leftArmAngleMotor.getTargetPosition());
-            telemetry.addData("arm mode", bot.getArmAngleMode());
+            telemetry.addData("arm mode", armMode);
 //            telemetry.addData("Intake Wheel State", bot.getIntakeWheelState());
             telemetry.addData("Intake Flipper", intakeFlipperPosition);
             telemetry.addData("Tape Elevation", tapeElevationPosition);
