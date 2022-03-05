@@ -64,13 +64,13 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
-            x1 = 30.5f;
-            y1 = 74f;
+            x1 = 30f; // was 30.5
+            y1 = 73.5f;  // was 74
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = ARM_MID;
             flipperPosition = FLIPPER_MID;
-            x1 = 30f;
-            y1 = 73.5f;
+            x1 = 29f; // was 30
+            y1 = 72.5f; // was 73.5
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
@@ -78,8 +78,8 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
             y1 = 74f;
         }
 
-        int rotationTicks = markerPos == MarkerPos.LEFT? -2855 : markerPos == MarkerPos.CENTER? -2380 : -2030;
-        int extensionTicks = markerPos == MarkerPos.LEFT? 23453 : markerPos == MarkerPos.CENTER? 27700 : 33382;
+        int rotationTicks = markerPos == MarkerPos.LEFT? -2915 : markerPos == MarkerPos.CENTER? -2380 : -2090;
+        int extensionTicks = markerPos == MarkerPos.LEFT? 23453 : markerPos == MarkerPos.CENTER? 27200 : 33382;
         float tapeElevation = markerPos == MarkerPos.LEFT? 0.614f : markerPos == MarkerPos.CENTER? 0.599f : 0.590f;
 
         pickUpTSEMulti(rotationTicks,extensionTicks,tapeElevation);
@@ -96,6 +96,11 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
 
         bot.setIntakePower(-0.2);
         sleep(1000);
+//        int leftArmTicks = bot.leftArmAngleMotor.getCurrentPosition();
+//        int rightArmTicks = bot.rightArmAngleMotor.getCurrentPosition();
+//        telemetry.addData("Arm Ticks", "Lt = %d  Rt = %d",
+//                leftArmTicks, rightArmTicks);
+//        telemetry.update();
         driveToPosition(SLOW, 28, bot.getPose().y, 45, 1);
         turnToHeading(-90, 3, 8, 60);
         driveToPosition(SLOW, 28f, 75, -90, 1);
@@ -108,6 +113,10 @@ public class RedRightAutoTSE extends FreightBotAutonomous {
 
         driveToPosition(FAST, 28f, 9, -90, 1);
 
-
+//        while (opModeIsActive()){
+//            telemetry.addData("Arm Ticks", "Lt = %d  Rt = %d",
+//                    leftArmTicks, rightArmTicks);
+//            telemetry.update();
+//        }
     }
 }

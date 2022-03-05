@@ -29,7 +29,6 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
     };
 
     double delay = 0;
-    float headingAngleDegrees = 135;  //was 150
 
     @Override
     public void runLoggingOpMode() {
@@ -93,11 +92,11 @@ public class BlueLeftAutoTSE extends FreightBotAutonomous {
 
         driveToPosition(12,x1,y1,180,1);
 
-        turnToHeading(headingAngleDegrees, 3, 8, 60);
+        turnToHeading(135, 3, 8, 60);
 
         bot.setIntakePower(-0.2);
         sleep(1000);
-        driveToPosition(SLOW, -24, bot.getPose().y, headingAngleDegrees, 1);
+        driveToPosition(SLOW, -24, bot.getPose().y, 135, 1);
         turnToHeading(-90, 3, 8, 60);
         driveToPosition(SLOW, -24f, 75, -90, 1);
         bot.setArmAngleTicks(200);

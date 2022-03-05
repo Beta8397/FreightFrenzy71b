@@ -68,8 +68,8 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
-            x1 = 29.5f;
-            y1 = 100f;
+            x1 = 28.5f;  // was 29.5
+            y1 = 101f;  // was 100
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
@@ -87,6 +87,11 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
 
         bot.setIntakePower(-0.2);
         sleep(1000);
+        int leftArmTicks = bot.leftArmAngleMotor.getCurrentPosition();
+        int rightArmTicks = bot.rightArmAngleMotor.getCurrentPosition();
+        telemetry.addData("Arm Ticks", "Lt = %d  Rt = %d",
+                leftArmTicks, rightArmTicks);
+        telemetry.update();
         driveToPosition(12,20f,111,-45,1);
         bot.setIntakePower(0);
         bot.setArmAngleTicks(0);
@@ -101,6 +106,12 @@ public class RedLeftAutoStorage extends FreightBotAutonomous {
         bot.setSpeedSpinnerMotor(0);
 
         driveToParkStorage(Alliance.RED);
+
+        while (opModeIsActive()){
+            telemetry.addData("Arm Ticks", "Lt = %d  Rt = %d",
+                    leftArmTicks, rightArmTicks);
+            telemetry.update();
+        }
 
     }
 }

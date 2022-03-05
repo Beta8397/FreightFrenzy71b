@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 @TeleOp (name = "FreightBotTeleOp", group = "FreightBot")
 public class FreightBotTeleOp extends MecBotTeleOp {
 
-    private enum TapeOperationState {ROTATING, ELEVATING, EXTENDING, DESCENDING}
+    private enum TapeOperationState {INIT, ROTATING, ELEVATING, EXTENDING, DESCENDING}
     private enum ArmMode {STANDARD,PROPORTIONATE,RAW}
 
     static final float SPINNER_SPEED = 1f;
@@ -63,9 +63,6 @@ public class FreightBotTeleOp extends MecBotTeleOp {
     };
 
 
-
-
-
     @Override
     public void runOpMode() {
         bot.init(hardwareMap);
@@ -73,6 +70,11 @@ public class FreightBotTeleOp extends MecBotTeleOp {
         bot.setIntakeFlipper(STD_FLIPPER_POS);
         bot.setTapeElevation(tapeElevationPosition);
         bot.closeCapHolderServo();
+        bot.setArmAngleMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bot.setArmAngleMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        bot.leftArmAngleMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bot.rightArmAngleMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
 
@@ -124,7 +126,7 @@ public class FreightBotTeleOp extends MecBotTeleOp {
             } else {
                 int avgArmPosition = (int)(0.5 * (leftArmAngleMotorPosition + rightArmAngleMotorPosition));
                 float armAnglePower = 0;
-                armAnglePower = -10.0f * gamepad2.left_stick_y;
+                armAnglePower = -12.0f * gamepad2.left_stick_y;
                 armAngleTargetTicksProportionate += armAnglePower;
                 float armAngleOffSet = armAngleTargetTicksProportionate - avgArmPosition;
                 bot.leftArmAngleMotor.setPower(0.003 * armAngleOffSet);
@@ -234,26 +236,31 @@ public class FreightBotTeleOp extends MecBotTeleOp {
 
     public class StoredTSEGrabber implements Updatable {
 
-        private TapeOperationState state = TapeOperationState.ROTATING;
+        private TapeOperationState state = TapeOperationState.INIT;
         ElapsedTime et = new ElapsedTime();
 
         public void update() {
             switch (state) {
-                case ROTATING:
+                case INIT:
                     bot.openCapHolderServo();
+                    tapeElevationPosition = FreightBot.TAPE_ELEVATION_MAX;
+                    bot.setTapeElevation(tapeElevationPosition);
+                    if (et.milliseconds() > 250) state = TapeOperationState.ROTATING;
+                    break;
+                case ROTATING:
                     bot.updateTapeRotation(-660, 1);
-                    if (et.milliseconds() > 500) state = TapeOperationState.ELEVATING;
+                    if (et.milliseconds() > 750) state = TapeOperationState.ELEVATING;
                     break;
                 case ELEVATING:
                     bot.updateTapeRotation(-660, 1);
                     tapeElevationPosition = 0.3f;
                     bot.setTapeElevation(tapeElevationPosition);
-                    if (et.milliseconds() > 1000) state = TapeOperationState.EXTENDING;
+                    if (et.milliseconds() > 1250) state = TapeOperationState.EXTENDING;
                     break;
                 case EXTENDING:
                     bot.updateTapeRotation(-660, 1);
                     bot.updateTapeExtension(12400);
-                    if (et.milliseconds() > 2000) state = TapeOperationState.DESCENDING;
+                    if (et.milliseconds() > 2250) state = TapeOperationState.DESCENDING;
                     break;
                 case DESCENDING:
                     bot.updateTapeRotation(-660, 1);
@@ -271,6 +278,7 @@ public class FreightBotTeleOp extends MecBotTeleOp {
         public void update() {
             switch (state) {
                 case ELEVATING:
+                    bot.openCapHolderServo();
                     tapeElevationPosition = 0.185f;
                     bot.setTapeElevation(tapeElevationPosition);
                     if (et.milliseconds() > 500) state = TapeOperationState.EXTENDING;
@@ -280,13 +288,14 @@ public class FreightBotTeleOp extends MecBotTeleOp {
                     if (bot.tapeExtensionEncoder.getCurrentPosition() < 14000) state = TapeOperationState.ROTATING;
                     break;
                 case ROTATING:
-
+                case INIT:
                 case DESCENDING:
                     bot.updateTapeExtension(13500);
                     bot.updateTapeRotation(-400,0.5f);
             }
         }
     }
+
 
 
 }

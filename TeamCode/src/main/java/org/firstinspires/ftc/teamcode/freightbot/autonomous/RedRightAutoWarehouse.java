@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.freightbot.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.freightbot.FreightBot;
 import org.firstinspires.ftc.teamcode.freightbot.FreightBotAutonomous;
 import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 
+@Disabled
 @Autonomous(name = "RedRightAutoWarehouse", group = "redAuto")
 public class RedRightAutoWarehouse extends FreightBotAutonomous {
 
@@ -63,18 +65,18 @@ public class RedRightAutoWarehouse extends FreightBotAutonomous {
         if (markerPos == MarkerPos.LEFT) {
             armAngleTicks = ARM_BOTTOM;
             flipperPosition = FLIPPER_BOTTOM;
-            x1 = 34f; //was -18
-            y1 = 70.5f; //was 107.3
+            x1 = 30f; //was -18
+            y1 = 73.5f; //was 107.3
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = ARM_MID;  //was 410
             flipperPosition = FLIPPER_MID;
-            x1 = 34f;
-            y1 = 70.5f;
+            x1 = 29f;
+            y1 = 72.5f;
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
-            x1 = 34f; //was -23
-            y1 = 70.5f; // was 105
+            x1 = 30.5f; //was -23
+            y1 = 74f; // was 105
         }
 
         bot.setArmAngleTicks(armAngleTicks);

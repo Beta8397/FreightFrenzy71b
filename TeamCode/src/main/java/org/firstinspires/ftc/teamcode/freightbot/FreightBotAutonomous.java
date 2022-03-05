@@ -24,11 +24,11 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
 
     public static final float FLIPPER_TOP = 0.73f;
     public static final float FLIPPER_MID = 0.73f;
-    public static final float FLIPPER_BOTTOM = 0.61f;
+    public static final float FLIPPER_BOTTOM = 0.7f;
     public static final float FLIPPER_BARRIER = 0.62f;
-    public static final int ARM_TOP = 510;
-    public static final int ARM_MID = 270;
-    public static final int ARM_BOTTOM = 70;
+    public static final int ARM_TOP = 520; // was 510
+    public static final int ARM_MID = 350;
+    public static final int ARM_BOTTOM = 110;
 
 
     private FreightBot bot = null;
@@ -172,14 +172,14 @@ public abstract class FreightBotAutonomous extends MecBotAutonomous {
     public void driveToParkWarehouse (Alliance alliance) {
         if (alliance == Alliance.RED) {
             bot.setPose(17,135);
-            driveToPosition(SLOW,30,90,(float)Math.toDegrees(bot.getPose().theta),1);
+            driveToPosition(SLOW,17,125,(float)Math.toDegrees(bot.getPose().theta),1);
             turnToHeading(-90,3,8,90);
-            driveToPosition(FAST,34,9,-90,1);
+            driveToPosition(FAST,15,9,-90,1);
         } else {
             bot.setPose(-17,135);
-            driveToPosition(SLOW,-21,132,(float)Math.toDegrees(bot.getPose().theta),1);
+            driveToPosition(SLOW,-17,125,(float)Math.toDegrees(bot.getPose().theta),1);
             turnToHeading(-90,3,8,90);
-            driveToPosition(FAST,-28,9,-90,1);
+            driveToPosition(FAST,-15,9,-90,1);
         }
     }
 

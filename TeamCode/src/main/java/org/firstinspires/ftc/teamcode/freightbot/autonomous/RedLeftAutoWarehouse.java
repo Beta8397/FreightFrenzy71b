@@ -68,8 +68,8 @@ public class RedLeftAutoWarehouse extends FreightBotAutonomous {
         } else if (markerPos == MarkerPos.CENTER) {
             armAngleTicks = ARM_MID;
             flipperPosition = FLIPPER_MID;
-            x1 = 29.5f;
-            y1 = 100f;
+            x1 = 28.5f;
+            y1 = 101f;
         } else {
             armAngleTicks = ARM_TOP;
             flipperPosition = FLIPPER_TOP;
@@ -99,6 +99,8 @@ public class RedLeftAutoWarehouse extends FreightBotAutonomous {
 
         carouselDrive(Alliance.RED);
         bot.setSpeedSpinnerMotor(0);
+
+        bot.setArmAngleTicks(200);
 
         driveToParkWarehouse(Alliance.RED);
 
