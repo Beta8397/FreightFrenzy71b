@@ -8,12 +8,17 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.robotcore.external.matrices.GeneralMatrixF;
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
+import org.firstinspires.ftc.robotcore.external.matrices.RowMajorMatrixF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.i2c.BNO055Enhanced;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
+import org.firstinspires.ftc.teamcode.util.KalmanMeasurementUpdater;
+import org.firstinspires.ftc.teamcode.util.KalmanReturnData;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.AngleUtils;
 
@@ -39,6 +44,9 @@ public class MecBot {
     private final float TICKS_PER_INCH_FWD;
     private final float TICKS_PER_INCH_STRAFE;
     private final float TICKS_PER_RADIAN;
+    private final float STRAFE_VARIANCE_COEFF = 0.16f;
+    private final float FWD_VARIANCE_COEFF = 0.16f;
+    private final float HEADING_VARIANCE = 0.00122f;
 
     protected boolean loggingEnabled = false;
 
@@ -71,6 +79,9 @@ public class MecBot {
      * The most recent previous readings of the drive motor ticks
      */
     int ticksBL, ticksFL, ticksFR, ticksBR;
+
+    protected KalmanMeasurementUpdater kalmanMeasurementUpdater = null;
+    protected MatrixF covariance = new GeneralMatrixF(2,2);
 
     /**
      * Enum MotorType represents types of motors that can be used to power the drive.
@@ -383,13 +394,38 @@ public class MecBot {
         /*
          * Convert this small increment of robot motion into WORLD COORDINATES
          */
-        float dX = dXR * (float)Math.sin(avgHeading) + dYR * (float)Math.cos(avgHeading);
-        float dY = -dXR * (float)Math.cos(avgHeading) + dYR * (float)Math.sin(avgHeading);
+        float sin = (float) Math.sin(avgHeading);
+        float cos = (float) Math.cos(avgHeading);
+        float dX = dXR * sin + dYR * cos;
+        float dY = -dXR * cos + dYR * sin;
 
         /*
          * Update the Pose object with the new values for X, Y, and Heading
          */
-        pose = new Pose(pose.x + dX, pose.y + dY, heading);
+        Pose poseMinus = new Pose(pose.x + dX, pose.y + dY, heading);
+
+        if (kalmanMeasurementUpdater == null) {
+            pose = poseMinus;
+        } else {
+            float varXR = Math.abs(dXR*STRAFE_VARIANCE_COEFF);
+            float varYR = Math.abs(dYR*FWD_VARIANCE_COEFF);
+            float varTheta = HEADING_VARIANCE;
+            MatrixF Q = new GeneralMatrixF(2,2);
+            Q.put(0, 0, varXR * sin * sin + varYR * cos * cos +
+                            varTheta*(dXR*cos - dYR*sin)*(dXR*cos - dYR*sin));
+            Q.put(1,1,varXR*cos*cos + varYR*sin*sin +
+                    varTheta*(dXR*sin + dYR*cos)*(dXR*sin + dYR*cos));
+            float covxy = (varYR - varXR)*sin*cos +
+                    varTheta*((dXR*dXR - dYR*dYR)*sin*cos + dXR*dYR*(cos*cos - sin*sin));
+            Q.put(0,1,covxy);
+            Q.put(1,0,covxy);
+            MatrixF covarianceMinus = covariance.added(Q);
+            KalmanReturnData kReturnData =
+                    kalmanMeasurementUpdater.kalmanMeasurementUpdate(poseMinus.x,poseMinus.y,
+                            covarianceMinus);
+            pose = new Pose(kReturnData.x,kReturnData.y,poseMinus.theta);
+            covariance = kReturnData.covariance;
+        }
 
         /*
          * Return the updated Pose object
