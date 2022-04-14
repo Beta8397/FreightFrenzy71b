@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.i2c.BNO055Enhanced;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.KalmanMeasurementUpdater;
-import org.firstinspires.ftc.teamcode.util.KalmanReturnData;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.AngleUtils;
 
@@ -410,6 +409,11 @@ public class MecBot {
             float varXR = Math.abs(dXR*STRAFE_VARIANCE_COEFF);
             float varYR = Math.abs(dYR*FWD_VARIANCE_COEFF);
             float varTheta = HEADING_VARIANCE;
+
+            /*
+             * Determine the uncertainty (in the form of a covariance matrix Q) that the odometry
+             * iteration adds to the previously-existing uncertainty of our pose estimate.
+             */
             MatrixF Q = new GeneralMatrixF(2,2);
             Q.put(0, 0, varXR * sin * sin + varYR * cos * cos +
                             varTheta*(dXR*cos - dYR*sin)*(dXR*cos - dYR*sin));
@@ -419,12 +423,13 @@ public class MecBot {
                     varTheta*((dXR*dXR - dYR*dYR)*sin*cos + dXR*dYR*(cos*cos - sin*sin));
             Q.put(0,1,covxy);
             Q.put(1,0,covxy);
-            MatrixF covarianceMinus = covariance.added(Q);
-            KalmanReturnData kReturnData =
-                    kalmanMeasurementUpdater.kalmanMeasurementUpdate(poseMinus.x,poseMinus.y,
-                            covarianceMinus);
-            pose = new Pose(kReturnData.x,kReturnData.y,poseMinus.theta);
-            covariance = kReturnData.covariance;
+            covariance.add(Q);
+
+            /*
+             * Apply measurements using Kalman filter algorithm. In addition to returning the pose,
+             * this method call will update (in place) the covariance matrix.
+             */
+            pose = kalmanMeasurementUpdater.kalmanMeasurementUpdate(poseMinus, covariance);
         }
 
         /*
