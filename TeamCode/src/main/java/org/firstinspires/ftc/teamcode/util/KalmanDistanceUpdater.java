@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.matrices.GeneralMatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
 
@@ -16,6 +19,8 @@ public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
     public final float MAX_HEADING_OFFSET = (float)Math.toRadians(7.0f);
     public final float MAX_DIST_ERROR_FRACTION = 0.2f;
     public final float STD_DEV_FRAC = 0.03f;
+    public final MatrixF IDENTITY = new GeneralMatrixF(2,2,
+            new float[]{1,0,0,1});
 
     DistanceSensor[] sensors = null;
     float[] offSets = null;
@@ -97,10 +102,42 @@ public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
             }
         }
 
-    // TODO: do the Kalman math and supply a return value and modify covariance matrix. 
-        return null;
+    // TODO: do the Kalman math and supply a return value and modify covariance matrix.
+        if (!xValid && !yValid) {
+            return pose;
+        }
+        MatrixF K;
+        MatrixF R;
 
+        if (xValid && yValid) {
+            R = new GeneralMatrixF(2,2,
+                    new float[]{xVar,0,0,yVar});
+            K = covMinus.multiplied(covMinus.added(R).inverted());
+        } else if (xValid) {
+            K = new GeneralMatrixF(2,2,
+                    new float[]{
+                            covMinus.get(0,0)/(covMinus.get(0,0) + xVar),0,
+                            covMinus.get(1,0)/(covMinus.get(0,0) + xVar),0});
+        } else {
+            K = new GeneralMatrixF(2,2,
+                    new float[]{
+                            0,covMinus.get(0,1)/(covMinus.get(1,1) + yVar),
+                            0,covMinus.get(1,1)/(covMinus.get(1,1) + yVar)});
+        }
 
+        VectorF xMinus = new VectorF(pose.x,pose.y);
+        VectorF z = new VectorF(xMeas,yMeas);
+
+        VectorF x = xMinus.added(K.multiplied(z.subtracted(xMinus)));
+
+        MatrixF cov = IDENTITY.subtracted(K).multiplied(covMinus);
+
+        covMinus.put(0,0,cov.get(0,0));
+        covMinus.put(0,1,cov.get(0,1));
+        covMinus.put(1,0,cov.get(1,0));
+        covMinus.put(1,1,cov.get(1,1));
+
+        return new Pose(x.get(0),x.get(1),pose.theta);
     }
 
 }

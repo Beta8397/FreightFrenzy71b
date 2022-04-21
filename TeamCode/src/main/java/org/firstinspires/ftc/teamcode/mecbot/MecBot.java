@@ -33,19 +33,19 @@ public class MecBot {
      * Constants
      */
 
-    private final MotorType MOTOR_TYPE;
-    private final float GEAR_RATIO;
-    private final float ABS_GEAR_RATIO;
-    private final float TICKS_PER_ROTATION;
+    public final MotorType MOTOR_TYPE;
+    public final float GEAR_RATIO;
+    public final float ABS_GEAR_RATIO;
+    public final float TICKS_PER_ROTATION;
 
     public static final float MAX_TICKS_PER_SECOND = 2500;
 
-    private final float TICKS_PER_INCH_FWD;
-    private final float TICKS_PER_INCH_STRAFE;
-    private final float TICKS_PER_RADIAN;
-    private final float STRAFE_VARIANCE_COEFF = 0.16f;
-    private final float FWD_VARIANCE_COEFF = 0.16f;
-    private final float HEADING_VARIANCE = 0.00122f;
+    public final float TICKS_PER_INCH_FWD;
+    public final float TICKS_PER_INCH_STRAFE;
+    public final float TICKS_PER_RADIAN;
+    public final float STRAFE_VARIANCE_COEFF = 0.16f;
+    public final float FWD_VARIANCE_COEFF = 0.16f;
+    public final float HEADING_VARIANCE = 0.00122f;
 
     protected boolean loggingEnabled = false;
 
@@ -81,6 +81,22 @@ public class MecBot {
 
     protected KalmanMeasurementUpdater kalmanMeasurementUpdater = null;
     protected MatrixF covariance = new GeneralMatrixF(2,2);
+
+    public void setKalmanMeasurementUpdater(KalmanMeasurementUpdater kMU) {
+        kalmanMeasurementUpdater = kMU;
+    }
+
+    public void setCovariance(float covXX,float covYY,float covXY) {
+        covariance.put(0,0,covXX);
+        covariance.put(0,1,covXY);
+        covariance.put(1,0,covXY);
+        covariance.put(1,1,covYY);
+
+    }
+
+    public MatrixF getCovariance() {
+        return covariance;
+    }
 
     /**
      * Enum MotorType represents types of motors that can be used to power the drive.
@@ -146,7 +162,7 @@ public class MecBot {
 //        TAN_ALPHA = 1;
 //        WL_AVG = 15;
 //        WHEEL_CIRCUMFERENCE = 6*(float)Math.PI;
-        GEAR_RATIO = 1;
+        GEAR_RATIO = -1;
         ABS_GEAR_RATIO = 1;
 //        AXES_MAP = BNO055Enhanced.AxesMap.XYZ;
 //        AXES_SIGN = BNO055Enhanced.AxesSign.PPP;

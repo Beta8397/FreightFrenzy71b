@@ -21,8 +21,7 @@ import org.firstinspires.ftc.teamcode.util.gamepad.ButtonToggle;
 //@Disabled
 public class MecBotDiagnostics extends LoggingLinearOpMode {
 
-    private MecBot bot = new MecBot(MecBot.MotorType.NeverestOrbital20, 13, 10, 6, 45, 1,
-            BNO055Enhanced.AxesMap.XYZ, BNO055Enhanced.AxesSign.PPP);
+    private MecBot bot = new MecBot();
 
     boolean drivingStraight = false;
     float targetHeading = 0;
