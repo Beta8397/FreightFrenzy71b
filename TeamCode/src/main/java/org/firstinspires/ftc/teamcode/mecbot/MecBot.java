@@ -162,7 +162,7 @@ public class MecBot {
 //        TAN_ALPHA = 1;
 //        WL_AVG = 15;
 //        WHEEL_CIRCUMFERENCE = 6*(float)Math.PI;
-        GEAR_RATIO = -1;
+        GEAR_RATIO = 1;
         ABS_GEAR_RATIO = 1;
 //        AXES_MAP = BNO055Enhanced.AxesMap.XYZ;
 //        AXES_SIGN = BNO055Enhanced.AxesSign.PPP;

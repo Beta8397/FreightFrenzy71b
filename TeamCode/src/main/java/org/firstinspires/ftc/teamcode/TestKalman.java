@@ -17,9 +17,10 @@ import org.firstinspires.ftc.teamcode.util.Pose;
 public class TestKalman extends MecBotTeleOp {
 
     DistanceSensor[] distanceSensors;
-    MecBot bot = new MecBot();
+    MecBot bot = new MecBot(MecBot.MotorType.NeverestOrbital20,43.1f,
+            48.1f,562.81f,-1);
 
-    public void runOpMode(){
+    public void runLoggingOpMode(){
         bot.init(hardwareMap);
 
         super.setup(bot);

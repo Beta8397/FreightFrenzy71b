@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * during each iteration.
  *
  */
-public abstract class MecBotTeleOp extends LinearOpMode {
+public abstract class MecBotTeleOp extends LoggingLinearOpMode {
 
     MecBot bot = null;
 

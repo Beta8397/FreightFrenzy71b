@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.GeneralMatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.logging.BetaLog;
 
 
 public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
@@ -85,7 +86,7 @@ public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
                 xVar = STD_DEV_FRAC*STD_DEV_FRAC*blueDist*blueDist;
             }
             if (redValid && (!blueValid || redDist < blueDist)) {
-                xMeas = redDist - X_RED - offSets[redIndex];
+                xMeas = X_RED + redDist + offSets[redIndex];
                 xVar = STD_DEV_FRAC*STD_DEV_FRAC*redDist*redDist;
             }
         }
@@ -93,7 +94,7 @@ public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
         if (backValid || audValid) {
             yValid = true;
             if (backValid) {
-                yMeas = backDist - Y_BACK - offSets[backIndex];
+                yMeas = Y_BACK + backDist + offSets[backIndex];
                 yVar = STD_DEV_FRAC*STD_DEV_FRAC*backDist*backDist;
             }
             if (audValid && (!backValid || audDist < backDist)) {
@@ -112,7 +113,19 @@ public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
         if (xValid && yValid) {
             R = new GeneralMatrixF(2,2,
                     new float[]{xVar,0,0,yVar});
-            K = covMinus.multiplied(covMinus.added(R).inverted());
+            BetaLog.d("MATRIX_MATH");
+            BetaLog.dd("covMinus","%d X %d",covMinus.numRows(),covMinus.numCols());
+            BetaLog.dd("R","%d X %d",R.numRows(),R.numCols());
+            MatrixF covMinusPlusR = covMinus.added(R);
+            BetaLog.dd("covMinusPlusR","%d X %d",covMinusPlusR.numRows(),covMinusPlusR.numCols());
+            float det = covMinusPlusR.get(0,0) * covMinusPlusR.get(1,1) -
+                    covMinusPlusR.get(0,1) * covMinusPlusR.get(1,0);
+            MatrixF covMinusPlusR_Inverted = new GeneralMatrixF(2,2,new float[]
+                    {covMinusPlusR.get(1,1)/det, -covMinusPlusR.get(0,1)/det,
+                    -covMinusPlusR.get(1,0)/det, covMinusPlusR.get(0,0)/det});
+            BetaLog.dd("covMinusPlusR_Inverted","%d X %d",covMinusPlusR_Inverted.numRows(),
+                    covMinusPlusR_Inverted.numCols());
+            K = covMinus.multiplied(covMinusPlusR_Inverted);
         } else if (xValid) {
             K = new GeneralMatrixF(2,2,
                     new float[]{

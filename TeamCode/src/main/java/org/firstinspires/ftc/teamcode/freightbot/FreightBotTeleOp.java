@@ -64,7 +64,7 @@ public class FreightBotTeleOp extends MecBotTeleOp {
 
 
     @Override
-    public void runOpMode() {
+    public void runLoggingOpMode() {
         bot.init(hardwareMap);
         super.setup(bot);
         bot.setIntakeFlipper(STD_FLIPPER_POS);

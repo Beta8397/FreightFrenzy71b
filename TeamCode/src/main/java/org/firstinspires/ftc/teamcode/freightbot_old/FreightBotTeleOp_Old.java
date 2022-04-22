@@ -83,7 +83,7 @@ public class FreightBotTeleOp_Old extends MecBotTeleOp {
     };
 
     @Override
-    public void runOpMode() {
+    public void runLoggingOpMode() {
         bot.init(hardwareMap, true);
         super.setup(bot);
         bot.setArmServoPosition(FreightBot_Old.DUMPER_RETRACTED);
