@@ -11,15 +11,15 @@ import org.firstinspires.ftc.teamcode.logging.BetaLog;
 
 public class KalmanDistanceUpdater implements KalmanMeasurementUpdater{
 
-    public final float FIELD_LENGTH = 144;
-    public final float FIELD_WIDTH = 144;
+    public final float FIELD_LENGTH = 141.25f;
+    public final float FIELD_WIDTH = 141.25f;
     public final float Y_BACK = 0;
     public final float Y_AUDIENCE = FIELD_LENGTH;
     public final float X_RED;
     public final float X_BLUE;
     public final float MAX_HEADING_OFFSET = (float)Math.toRadians(7.0f);
     public final float MAX_DIST_ERROR_FRACTION = 0.2f;
-    public final float STD_DEV_FRAC = 0.03f;
+    public final float STD_DEV_FRAC = 0.015f;
     public final MatrixF IDENTITY = new GeneralMatrixF(2,2,
             new float[]{1,0,0,1});
 
