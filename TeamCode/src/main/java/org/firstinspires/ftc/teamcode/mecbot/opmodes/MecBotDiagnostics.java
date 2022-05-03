@@ -52,14 +52,15 @@ public class MecBotDiagnostics extends LoggingLinearOpMode {
         PIDFCoefficients pidfBR = bot.getBackRight().getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         PIDFCoefficients pidfFL = bot.getFrontLeft().getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         PIDFCoefficients pidfFR = bot.getFrontRight().getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-//        BetaLog.dd("DIAGNOSTICS", "BL  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
-//                pidfBL.p, pidfBL.i, pidfBL.d, pidfBL.f);
-//        BetaLog.dd("DIAGNOSTICS", "BR  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
-//                pidfBR.p, pidfBR.i, pidfBR.d, pidfBR.f);
-//        BetaLog.dd("DIAGNOSTICS", "FL  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
-//                pidfFL.p, pidfFL.i, pidfFL.d, pidfFL.f);
-//        BetaLog.dd("DIAGNOSTICS", "FR  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
-//                pidfFR.p, pidfFR.i, pidfFR.d, pidfFR.f);
+        telemetry.addData("DIAGNOSTICS", "BL  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
+                pidfBL.p, pidfBL.i, pidfBL.d, pidfBL.f);
+        telemetry.addData("DIAGNOSTICS", "BR  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
+                pidfBR.p, pidfBR.i, pidfBR.d, pidfBR.f);
+        telemetry.addData("DIAGNOSTICS", "FL  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
+                pidfFL.p, pidfFL.i, pidfFL.d, pidfFL.f);
+        telemetry.addData("DIAGNOSTICS", "FR  P = %.3f  I = %.3f  D = %.3f  F = %.3f",
+                pidfFR.p, pidfFR.i, pidfFR.d, pidfFR.f);
+        telemetry.update();
 
         waitForStart();
 

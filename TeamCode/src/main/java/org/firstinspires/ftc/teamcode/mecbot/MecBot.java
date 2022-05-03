@@ -188,7 +188,7 @@ public class MecBot {
         backLeft = hwMap.get(DcMotorEx.class, "back_left_motor");
         backRight = hwMap.get(DcMotorEx.class, "back_right_motor");
 
-        setDriveVelocityPIDF(15, 0.3, 0, 20);
+        //setDriveVelocityPIDF(15, 0.3, 0, 20);
 
         /*
          * Either the right or the left motors need to have their directions reversed, depending upon
