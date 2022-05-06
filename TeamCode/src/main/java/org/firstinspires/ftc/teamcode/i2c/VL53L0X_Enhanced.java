@@ -31,10 +31,11 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/* Modified by FTC Team Beta 8397 */
+
 package org.firstinspires.ftc.teamcode.i2c;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareDeviceHealth.HealthStatus;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -51,18 +52,9 @@ import java.util.concurrent.TimeUnit;
 
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.DYNAMIC_SPAD_NUM_REQUESTED_REF_SPAD;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.DYNAMIC_SPAD_REF_EN_START_OFFSET;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.FINAL_RANGE_CONFIG_VCSEL_PERIOD;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.GLOBAL_CONFIG_REF_EN_START_SELECT;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.GLOBAL_CONFIG_SPAD_ENABLES_REF_0;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.GPIO_HV_MUX_ACTIVE_HIGH;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.MSRC_CONFIG_CONTROL;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.MSRC_CONFIG_TIMEOUT_MACROP;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.OSC_CALIBRATE_VAL;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.PRE_RANGE_CONFIG_TIMEOUT_MACROP_HI;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.PRE_RANGE_CONFIG_VCSEL_PERIOD;
-import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.RESULT_INTERRUPT_STATUS;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.RESULT_RANGE_STATUS;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.SYSRANGE_START;
 import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.SYSTEM_INTERMEASUREMENT_PERIOD;
@@ -82,6 +74,9 @@ import static com.qualcomm.hardware.stmicroelectronics.VL53L0X.Register.SYSTEM_S
 @DeviceProperties(xmlTag = "VL53L0X_Enhanced", name = "VL53L0X_Enhanced", description = "VL53L0X_Enhanced")
 public class VL53L0X_Enhanced extends I2cDeviceSynchDevice<I2cDeviceSynch> implements DistanceSensor
 {
+
+    enum CacheMode {CACHE, NOCACHE}
+
     //***********************************************************************************************
     // User methods.
     //***********************************************************************************************
@@ -101,6 +96,16 @@ public class VL53L0X_Enhanced extends I2cDeviceSynchDevice<I2cDeviceSynch> imple
     public byte getModelID() {
         return readReg(Register.IDENTIFICATION_MODEL_ID);
     };
+
+    // Set the mode
+    public void setMode(CacheMode cacheMode){
+        this.cacheMode = cacheMode;
+    }
+
+    // Get the mode
+    public CacheMode getMode(){
+        return this.cacheMode;
+    }
 
     @Override
     public double getDistance(DistanceUnit unit) {
@@ -261,6 +266,12 @@ public class VL53L0X_Enhanced extends I2cDeviceSynchDevice<I2cDeviceSynch> imple
     //***********************************************************************************************
     // Member variables.
     //***********************************************************************************************
+
+    // if cacheMode == CACHE, the most recent distance read will be saved in the readCache variable,
+    // and will be returned if no new data is available. If cacheMode == NOCACHE, then a value
+    // less than 0 will be returned if no new data is available.
+    private CacheMode cacheMode = CacheMode.NOCACHE;
+
     // stop_variable is read by init and used when starting measurement;
     // it is the same as the StopVariable field of VL53L0X_DevData_t structure in API
     private byte stop_variable = 0;
@@ -1018,18 +1029,35 @@ public class VL53L0X_Enhanced extends I2cDeviceSynchDevice<I2cDeviceSynch> imple
             return FAKE_DISTANCE_MM;
         }
 
-        if(readTimer.milliseconds() > TimeUnit.MICROSECONDS.toMillis(measurement_timing_budget_us) //Its been long enough that new data should be available
-                || readCache == FAKE_DISTANCE_MM){ //Or we never had data in the first place
-            if((readReg(Register.RESULT_INTERRUPT_STATUS) & 0x07) != 0){
-                //The device is indicating there is new data available so lets read and cache it
-                readCache = TypeConversion.byteArrayToShort(deviceClient.read(RESULT_RANGE_STATUS.bVal + 10, 2));
-                //Clear the interrupt flag and reset the timer so we don't waste time polling the device constantly while reading
+        if (cacheMode == CacheMode.CACHE) {  // cacheMode is CACHE
+            // If new data available, store it in cache AND return it. Otherwise return what was
+            // already in the cache.
+            if (readTimer.milliseconds() > TimeUnit.MICROSECONDS.toMillis(measurement_timing_budget_us) //Its been long enough that new data should be available
+                    || readCache == FAKE_DISTANCE_MM) { //Or we never had data in the first place
+                if ((readReg(Register.RESULT_INTERRUPT_STATUS) & 0x07) != 0) {
+                    //The device is indicating there is new data available so lets read and cache it
+                    readCache = TypeConversion.byteArrayToShort(deviceClient.read(RESULT_RANGE_STATUS.bVal + 10, 2));
+                    //Clear the interrupt flag and reset the timer so we don't waste time polling the device constantly while reading
+                    writeReg(SYSTEM_INTERRUPT_CLEAR.bVal, 0x01);
+                    readTimer.reset();
+                }
+            }
+            return readCache;
+
+        } else {                // cacheMode is NOCACHE
+            // If new data available, return it; otherwise, return -1
+            if (readTimer.milliseconds() > TimeUnit.MICROSECONDS.toMillis(measurement_timing_budget_us)
+                    && (readReg(Register.RESULT_INTERRUPT_STATUS) & 0x07) != 0) {
+                int temp = TypeConversion.byteArrayToShort(deviceClient.read(RESULT_RANGE_STATUS.bVal + 10, 2));
                 writeReg(SYSTEM_INTERRUPT_CLEAR.bVal, 0x01);
                 readTimer.reset();
-            }
-        }
+                return temp;
 
-        return readCache;
+            } else {
+                return -1;
+            }
+
+        }
     }
 
     //***********************************************************************************************
