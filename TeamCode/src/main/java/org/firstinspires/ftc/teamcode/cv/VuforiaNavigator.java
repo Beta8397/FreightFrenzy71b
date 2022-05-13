@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.util.Pose;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
@@ -44,7 +45,7 @@ public class VuforiaNavigator {
             OpenGLMatrix.translation(0, 0, 0).multiplied(
                     Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.XZX,
                             AngleUnit.DEGREES, 90, 0, 0));
-    private static OpenGLMatrix cameraLocationOnRobot = DEFAULT_CAMERA_LOCATION_ON_ROBOT;
+    private static OpenGLMatrix robotFromFtcCamera = DEFAULT_CAMERA_LOCATION_ON_ROBOT;
     private static final VuforiaLocalizer.CameraDirection DEFAULT_CAMERA_DIRECTION = VuforiaLocalizer.CameraDirection.BACK;
 
     /**
@@ -82,7 +83,7 @@ public class VuforiaNavigator {
     private static void internalActivate(String assetName, OpenGLMatrix[] targetLocations, OpenGLMatrix cameraLocation,
                                          VuforiaLocalizer.CameraDirection cameraDirection, WebcamName webcamName) {
         targetAssetName = assetName;
-        if (cameraLocation != null) VuforiaNavigator.cameraLocationOnRobot = cameraLocation;
+        if (cameraLocation != null) VuforiaNavigator.robotFromFtcCamera = cameraLocation;
 
         //Create the VuforiaLocalizer
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
@@ -111,7 +112,7 @@ public class VuforiaNavigator {
         for (int i = 0; i < targets.size(); i++) {
             if (targetLocations == null) targets.get(i).setLocation(DEFAULT_TARGET_LOCATION);
             else targets.get(i).setLocation(targetLocations[i]);
-            ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).setPhoneInformation(cameraLocationOnRobot, cameraDirection);
+            ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).setPhoneInformation(robotFromFtcCamera, cameraDirection);
         }
 
         //activate targets
@@ -119,60 +120,48 @@ public class VuforiaNavigator {
 
     }
 
+    /**
+     * Obtain transform from coordinate system of target i to the FTC Camera coordinate system (the
+     * pose of the target relative to the camera).
+     * @param i
+     * @return
+     */
     public static OpenGLMatrix getFtcCameraFromTarget(int i) {
         return ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).getFtcCameraFromTarget();
     }
 
+    /**
+     * Obtain transform from the coordinate system of the camera to the coordinate system of target i
+     * (the pose of the camera relative to the target).
+     * @param i
+     * @return
+     */
     public static OpenGLMatrix getTargetFromFtcCamera(int i) {
         OpenGLMatrix ftcCameraFromTarget = getFtcCameraFromTarget(i);
         if (ftcCameraFromTarget == null) return null;
         return ftcCameraFromTarget.inverted();
     }
 
+    /**
+     * Using target i, obtain transform from the robot coordinate system to the field coordinate
+     * system (the pose of the robot on the field). This requires knowledge of the pose of the
+     * target on the field and the pose of the camera on the robot.
+     * @param i
+     * @return
+     */
     public static OpenGLMatrix getFieldFromRobot(int i) {
+        if (robotFromFtcCamera == null) return null;
+        OpenGLMatrix ftcCameraFromRobot = robotFromFtcCamera.inverted();
         OpenGLMatrix ftcFieldFromTarget = targets.get(i).getFtcFieldFromTarget();
         if (ftcFieldFromTarget == null) return null;
         OpenGLMatrix targetFromFtcCamera = getTargetFromFtcCamera(i);
         if (targetFromFtcCamera == null) return null;
         return ftcFieldFromTarget
                 .multiplied(targetFromFtcCamera)
-                .multiplied(cameraLocationOnRobot);
+                .multiplied(ftcCameraFromRobot);
     }
 
 
-
-//    public static OpenGLMatrix getTargetPoseRelativeToCamera(int i){
-//        OpenGLMatrix targetPoseRelativeToCamera = ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).getPose();
-//        return targetPoseRelativeToCamera;
-//    }
-
-
-
-    /**
-     * Obtain pose (as OpenGLMatrix) of the specified target relative to the robot.
-     *
-     * @param i Index of the target.
-     * @return Pose of target relative to robot (i.e., the target-to-robot coordinate transform)
-     */
-//    public static OpenGLMatrix getTargetPoseRelativeToRobot(int i) {
-//        OpenGLMatrix targetPoseRelativeToCamera =
-//                ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).getPose();
-//        if (targetPoseRelativeToCamera == null) return null;
-//        return cameraLocationOnRobot.multiplied(targetPoseRelativeToCamera);
-//    }
-
-    /**
-     * Obtain pose of (as OpenGLMatrix) of robot relative to specified target.
-     *
-     * @param i Index of the target.
-     * @return Pose of robot relative to target (i.e., the robot-to-target coordinate transform)
-     */
-//    public static OpenGLMatrix getRobotPoseRelativeToTarget(int i) {
-//        OpenGLMatrix targetPoseRelativeToCamera =
-//                ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).getPose();
-//        if (targetPoseRelativeToCamera == null) return null;
-//        return (cameraLocationOnRobot.multiplied(targetPoseRelativeToCamera)).inverted();
-//    }
 
     /**
      * Set target location on field.
@@ -184,34 +173,7 @@ public class VuforiaNavigator {
         targets.get(i).setLocation(targetLocation);
     }
 
-    /**
-     * Get robot location on field, using the specified target
-     *
-     * @param i Index of the target
-     * @return Pose of robot on field (i.e., the robot-to-field coordinate transform)
-     */
-//    public static OpenGLMatrix getRobotLocation(int i) {
-//        return ((VuforiaTrackableDefaultListener) targets.get(i).getListener()).getRobotLocation();
-//    }
 
-
-    /**
-     * Provided with a robot-to-target coordinate transform (i.e., a robot pose relative to target),
-     * returns the Z,X coordinates and heading Phi of the robot in the target coordinate system.
-     * Here, Phi is the angle between target Z-axis and projection of robot Y-axis into the target
-     * Z-X plane.
-     *
-     * @param locationTransform robot-to-target coordinate transform (i.e., robot pose relative to target)
-     * @return Array of float containing Z, X, and Phi (radians), in that order.
-     */
-//    public static float[] getZ_X_Phi_FromLocationTransform(OpenGLMatrix locationTransform) {
-//        float[] locationData = locationTransform.getData();
-//        float[] returnValue = new float[3];
-//        returnValue[0] = locationData[14] / 10.0f;
-//        returnValue[1] = locationData[12] / 10.0f;
-//        returnValue[2] = (float) Math.atan2(locationData[4], locationData[6]);
-//        return returnValue;
-//    }
 
     /**
      * Provided with a robot-to-field coordinate transform (i.e., a robot pose relative to field),
@@ -222,13 +184,12 @@ public class VuforiaNavigator {
      * @param locationTransform robot-to-field coordinate transform (i.e., robot pose relative to field)
      * @return Array of float containing X,Y, and Theta (radians), in that order
      */
-    public static float[] getX_Y_Theta_FromLocationTransform(OpenGLMatrix locationTransform) {
+    public static Pose getPoseFromLocationTransform(OpenGLMatrix locationTransform) {
         float[] locationData = locationTransform.getData();
-        float[] returnValue = new float[3];
-        returnValue[0] = locationData[12] / 10.0f;
-        returnValue[1] = locationData[13] / 10.0f;
-        returnValue[2] = (float) Math.atan2(locationData[5], locationData[4]);
-        return returnValue;
+        float x = locationData[12] / 25.4f;
+        float y = locationData[13] / 25.4f;
+        float theta = (float) Math.atan2(locationData[5], locationData[4]);
+        return new Pose(x, y, theta);
     }
 
 

@@ -18,21 +18,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.teamcode.util.Pose;
 
 /**
  * Created by FTC Team 8397 on 9/13/2019.
  */
-@Disabled
+//@Disabled
 @Autonomous(name="TestVuforia", group="Test")
 public class TestVuforia extends LinearOpMode {
 
     final OpenGLMatrix cameraLocation = OpenGLMatrix.translation(0, 0, 0).multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC
-            , AxesOrder.YXY, AngleUnit.DEGREES, 0, 0, 0));
+            , AxesOrder.XZX, AngleUnit.DEGREES, 90, 180, 0));
 
     public void runOpMode() {
-        final OpenGLMatrix[] targetPositions = new OpenGLMatrix[8];
+        final OpenGLMatrix[] targetPositions = new OpenGLMatrix[4];
 
-        for(int i = 0; i < 8; i++) {
+        for(int i = 0; i < 4; i++) {
             targetPositions[i] = OpenGLMatrix.translation(0, 0, 0).multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC,
                     AxesOrder.XYX, AngleUnit.DEGREES, 90, 0, 0));
         }
@@ -40,7 +41,9 @@ public class TestVuforia extends LinearOpMode {
         WebcamName webcamName = hardwareMap.get(WebcamName.class,"webcam");
 
         VuforiaNavigator.activate("FreightFrenzy", targetPositions,
-                cameraLocation, VuforiaLocalizer.CameraDirection.UNKNOWN, webcamName);
+                cameraLocation, VuforiaLocalizer.CameraDirection.BACK, webcamName);
+
+        waitForStart();
 
         ElapsedTime et = new ElapsedTime();
         while(opModeIsActive()) {
@@ -48,26 +51,25 @@ public class TestVuforia extends LinearOpMode {
                 continue;
             } else {
                 et.reset();
-                OpenGLMatrix pose = null;
-                for(int i = 0; i < 13; i++) {
-                    pose = VuforiaNavigator.getFtcCameraFromTarget(i);
-                    if(pose != null) {
+                OpenGLMatrix poseMatrix = null;
+                for(int i = 0; i < 4; i++) {
+                    poseMatrix = VuforiaNavigator.getFieldFromRobot(i);
+                    if(poseMatrix != null) {
                         telemetry.addData("Target", " %d", i);
                         break;
                     }
                 }
-                if(pose == null) {
+                if(poseMatrix == null) {
                     telemetry.addData("No Target Found", "");
                 } else {
-                    float[] XYTheta = VuforiaNavigator.getX_Y_Theta_FromLocationTransform(pose);
+                    Pose pose = VuforiaNavigator.getPoseFromLocationTransform(poseMatrix);
                     telemetry.addData("Pose", " x=%.1f  y=%.1f  theta=%.1f",
-                            XYTheta[0], XYTheta[1], XYTheta[2] * 180.0 / Math.PI);
+                            pose.x, pose.y, pose.theta * 180.0 / Math.PI);
                 }
 
                 telemetry.update();
             }
         }
 
-        //VuforiaNavigator.setFlashTorchMode(false);
     }
 }
