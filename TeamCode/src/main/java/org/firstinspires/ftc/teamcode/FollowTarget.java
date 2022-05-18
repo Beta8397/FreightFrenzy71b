@@ -25,6 +25,8 @@ public class FollowTarget extends LinearOpMode {
             , AxesOrder.XZX, AngleUnit.DEGREES, 90, 180, 0));
 
 
+    Pose pose = new Pose(0,0,0);
+
     public void runOpMode() {
         bot.init(hardwareMap);
         final OpenGLMatrix[] targetPositions = new OpenGLMatrix[4];
@@ -48,16 +50,28 @@ public class FollowTarget extends LinearOpMode {
             }
             if (poseMatrix == null) {
                 telemetry.addData("No Target Found", "");
+                telemetry.addData("Last Pose", "X = %.1f  Y = %.1f  Th = %.1f", pose.x, pose.y,
+                        Math.toDegrees(pose.theta));
                 telemetry.update();
                 bot.setDrivePower(0, 0, 0);
                 continue;
             }
-            Pose pose = VuforiaNavigator.getPoseFromLocationTransform(poseMatrix);
-            float xError = -pose.x;
-            float yError = -24 - pose.y;
+            pose = VuforiaNavigator.getPoseFromLocationTransform(poseMatrix);
+            float xError = -1.5f - pose.x;
+            float yError = -20 - pose.y;
             float d1 = (float) Math.hypot(xError, yError);
-            float headingTargetRadians = (float) Math.atan2(-pose.y, -pose.x);
-            float thetaError = (float) AngleUtils.normalizeRadians(headingTargetRadians - pose.theta);
+
+            OpenGLMatrix fieldFromCamera = poseMatrix.multiplied(cameraLocation);
+            float[] camData = fieldFromCamera.getData();
+            float camXmm = camData[12];
+            float camYmm = camData[13];
+
+//            float headingTargetRadians = (float) AngleUtils.normalizeRadians(
+//                    Math.atan2(-pose.y, -pose.x) + Math.atan2(1.5, 8));
+//            float thetaError = (float) AngleUtils.normalizeRadians(headingTargetRadians - pose.theta);
+
+            float headingTargetRadians = (float)AngleUtils.normalizeRadians(Math.atan2(-camYmm, -camXmm));
+            float thetaError = (float)AngleUtils.normalizeRadians(headingTargetRadians - pose.theta);
 
             float sinTheta = (float) Math.sin(pose.theta);
             float cosTheta = (float) Math.cos(pose.theta);
@@ -65,15 +79,20 @@ public class FollowTarget extends LinearOpMode {
             float xErrorRobot = xError * sinTheta - yError * cosTheta;
             float yErrorRobot = xError * cosTheta + yError * sinTheta;
 
-            float speed = 4*Math.abs(d1);
-            if (speed > 20) {
-                speed = 20;
+            float vx = 0, vy = 0, va = 0;
+
+            if (Math.abs(Math.toDegrees(thetaError)) > 5) {
+                va = 3*thetaError;
+            } else if (d1 > 2) {
+                float speed = 3 * Math.abs(d1);
+                if (speed > 20) {
+                    speed = 20;
+                } else if (speed < 4){
+                    speed = 4;
+                }
+                vx = xErrorRobot * speed / d1;
+                vy = yErrorRobot * speed / d1;
             }
-
-            float vx = xErrorRobot * speed / d1;
-            float vy = yErrorRobot * speed / d1;
-
-            float va = 1 * thetaError;
 
             bot.setDriveSpeed(vx,vy,va);
 
