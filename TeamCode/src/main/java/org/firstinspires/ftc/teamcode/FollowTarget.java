@@ -58,7 +58,7 @@ public class FollowTarget extends LinearOpMode {
             }
             pose = VuforiaNavigator.getPoseFromLocationTransform(poseMatrix);
             float xError = -1.5f - pose.x;
-            float yError = -20 - pose.y;
+            float yError = -15 - pose.y;
             float d1 = (float) Math.hypot(xError, yError);
 
             OpenGLMatrix fieldFromCamera = poseMatrix.multiplied(cameraLocation);

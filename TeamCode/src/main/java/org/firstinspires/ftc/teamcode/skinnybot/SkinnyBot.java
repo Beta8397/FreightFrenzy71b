@@ -13,8 +13,6 @@ public class SkinnyBot extends MecBot {
     DcMotorEx armMotor;
     CRServo intake;
 
-    public final int MIN_ARM_TICKS = 0;
-    public final int MAX_ARM_TICKS = 2025;
 
     public SkinnyBot() {
         super(MotorType.NeverestOrbital20, 43.1f, 48.1f, 433,1);
@@ -32,11 +30,6 @@ public class SkinnyBot extends MecBot {
     }
 
     public void setArmPosition(int ticks) {
-        if (ticks > MAX_ARM_TICKS) {
-            ticks = MAX_ARM_TICKS;
-        } else if (ticks < MIN_ARM_TICKS) {
-            ticks = MIN_ARM_TICKS;
-        }
         armMotor.setTargetPosition(ticks);
         armMotor.setPower(0.5f);
     }

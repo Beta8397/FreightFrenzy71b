@@ -10,16 +10,16 @@ public class SkinnyBotTeleop extends MecBotTeleOp {
 
     SkinnyBot bot = new SkinnyBot();
 
-    private ButtonToggle toggleB = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
+    private ButtonToggle toggleLeftBumper = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
         @Override
         protected boolean getButtonState() {
-            return gamepad1.b;
+            return gamepad1.left_bumper;
         }
     };
-    private ButtonToggle toggleX = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
+    private ButtonToggle toggleRightBumper = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
         @Override
         protected boolean getButtonState() {
-            return gamepad1.x;
+            return gamepad1.right_bumper;
         }
     };
     private ButtonToggle toggleY = new ButtonToggle(ButtonToggle.Mode.PRESSED) {
@@ -44,17 +44,17 @@ public class SkinnyBotTeleop extends MecBotTeleOp {
                 targetTicks += 50;
             }
             bot.setArmPosition(targetTicks);
-            boolean bToggled = toggleB.update();
-            boolean xToggled = toggleX.update();
+            boolean rightBumperToggled = toggleRightBumper.update();
+            boolean leftBumperToggled = toggleLeftBumper.update();
             float currentIntakePower = (float)bot.intake.getPower();
             telemetry.addData("intake power",currentIntakePower);
-            if (bToggled) {
+            if (rightBumperToggled) {
                 if (currentIntakePower <= 0) {
                     bot.setIntakePower(1);
                 } else {
                     bot.setIntakePower(0);
                 }
-            } else if (xToggled) {
+            } else if (leftBumperToggled) {
                 if (currentIntakePower >= 0) {
                     bot.setIntakePower(-1);
                 } else {
